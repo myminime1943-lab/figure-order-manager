@@ -481,6 +481,13 @@ export default function App() {
       o.description.toLowerCase().includes(q) || (o.contact || "").toLowerCase().includes(q);
     return matchStatus && matchSearch;
   }).sort((a, b) => {
+    // 배송완료 상태를 가장 뒤로 보냄
+    const statusPriority = (s) => s === "배송완료" ? 1 : 0;
+    const priorityA = statusPriority(a.status);
+    const priorityB = statusPriority(b.status);
+    if (priorityA !== priorityB) return priorityA - priorityB;
+
+    // 같은 그룹 내에서는 주문일 순으로 정렬
     const dateA = a.orderDate || "99/99";
     const dateB = b.orderDate || "99/99";
     return dateA.localeCompare(dateB);
