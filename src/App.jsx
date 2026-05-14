@@ -267,8 +267,13 @@ function OrderForm({ onSave, onCancel, initialData = null, initialImages = [] })
 function OrderCard({ order, onClick }) {
   const thumb = order.images?.[0];
   const bg = PLATFORM_COLORS[order.platform] || "#fff";
+  const isCompleted = order.status === "배송완료";
   return (
-    <div onClick={onClick} className="order-card" style={{ background: bg }}>
+    <div onClick={onClick} className="order-card" style={{ 
+      background: bg,
+      opacity: isCompleted ? 0.5 : 1,
+      filter: isCompleted ? "grayscale(30%)" : "none"
+    }}>
       {thumb ? (
         <img src={thumb.src} alt="" style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 10, flexShrink: 0 }} />
       ) : (
@@ -377,6 +382,7 @@ export default function App() {
   const [filterStatus, setFilterStatus] = useState("전체");
   const [search, setSearch] = useState("");
   const [initialImages, setInitialImages] = useState([]);
+  const [hideCompleted, setHideCompleted] = useState(false);
 
   useEffect(() => {
     const handleGlobalPaste = (e) => {
@@ -476,10 +482,11 @@ export default function App() {
 
   const filtered = orders.filter(o => {
     const matchStatus = filterStatus === "전체" || o.status === filterStatus;
+    const matchHide = !hideCompleted || o.status !== "배송완료";
     const q = search.toLowerCase();
     const matchSearch = !q || o.customerName.toLowerCase().includes(q) ||
       o.description.toLowerCase().includes(q) || (o.contact || "").toLowerCase().includes(q);
-    return matchStatus && matchSearch;
+    return matchStatus && matchSearch && matchHide;
   }).sort((a, b) => {
     // 배송완료 상태를 가장 뒤로 보냄
     const statusPriority = (s) => s === "배송완료" ? 1 : 0;
@@ -517,16 +524,22 @@ export default function App() {
         ))}
       </div>
 
-      <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-        {["전체", ...Object.keys(STATUS)].map(s => (
-          <button type="button" key={s} onClick={() => setFilterStatus(s)} style={{
-            padding: "6px 14px", borderRadius: 20, border: "1px solid",
-            borderColor: filterStatus === s ? "#4B7BEC" : "#E0E4EA",
-            background: filterStatus === s ? "#EBF0FD" : "#fff",
-            color: filterStatus === s ? "#4B7BEC" : "#6B7684",
-            fontWeight: filterStatus === s ? 600 : 400, cursor: "pointer", fontSize: 13
-          }}>{s} ({s === "전체" ? orders.length : counts[s]})</button>
-        ))}
+      <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {["전체", ...Object.keys(STATUS)].map(s => (
+            <button type="button" key={s} onClick={() => setFilterStatus(s)} style={{
+              padding: "6px 14px", borderRadius: 20, border: "1px solid",
+              borderColor: filterStatus === s ? "#4B7BEC" : "#E0E4EA",
+              background: filterStatus === s ? "#EBF0FD" : "#fff",
+              color: filterStatus === s ? "#4B7BEC" : "#6B7684",
+              fontWeight: filterStatus === s ? 600 : 400, cursor: "pointer", fontSize: 13
+            }}>{s} ({s === "전체" ? orders.length : counts[s]})</button>
+          ))}
+        </div>
+        <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 13, color: "#6B7684", padding: "4px 8px", background: "#f1f3f5", borderRadius: 8 }}>
+          <input type="checkbox" checked={hideCompleted} onChange={e => setHideCompleted(e.target.checked)} />
+          완료 숨기기
+        </label>
       </div>
 
       <input value={search} onChange={e => setSearch(e.target.value)}
