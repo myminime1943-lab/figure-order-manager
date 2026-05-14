@@ -42,13 +42,13 @@ function StatusBadge({ status }) {
   );
 }
 
-function ImageUploader({ images, onChange }) {
+function ImageUploader({ images, onChange, initialFiles = [] }) {
   const ref = useRef();
   const pasteZoneRef = useRef();
   const [uploading, setUploading] = useState(false);
   const [pasteHover, setPasteHover] = useState(false);
 
-  const handleFiles = async (files) => {
+  const handleFiles = useCallback(async (files) => {
     setUploading(true);
     const newImages = [];
     for (const file of Array.from(files)) {
@@ -64,9 +64,9 @@ function ImageUploader({ images, onChange }) {
     }
     onChange(prev => [...prev, ...newImages]);
     setUploading(false);
-  };
+  }, [onChange]);
 
-  const handlePaste = async (e) => {
+  const handlePaste = useCallback(async (e) => {
     const items = e.clipboardData?.items;
     if (!items) return;
     const imageFiles = [];
@@ -84,12 +84,19 @@ function ImageUploader({ images, onChange }) {
       e.preventDefault();
       await handleFiles(imageFiles);
     }
-  };
+  }, [handleFiles]);
 
   useEffect(() => {
     document.addEventListener('paste', handlePaste);
     return () => document.removeEventListener('paste', handlePaste);
-  }, []);
+  }, [handlePaste]);
+
+  // initialFiles(모달 열릴 때 전달된 이미지들) 처리
+  useEffect(() => {
+    if (initialFiles && initialFiles.length > 0) {
+      handleFiles(initialFiles);
+    }
+  }, [initialFiles, handleFiles]);
 
   return (
     <div>
@@ -156,8 +163,8 @@ const btnSecondary = {
   color: "#4A5568", fontSize: 14, cursor: "pointer"
 };
 
-function OrderForm({ initial, onSave, onCancel }) {
-  const [form, setForm] = useState(initial || {
+function OrderForm({ onSave, onCancel, initialData = null, initialImages = [] }) {
+  const [form, setForm] = useState(initialData || {
     customerName: "", platform: "스마트스토어", contact: "", address: "", additionalItems: "",
     description: "", orderDate: "",
     status: "접수", notes: "", images: [], createdAt: new Date().toISOString()
@@ -226,7 +233,11 @@ function OrderForm({ initial, onSave, onCancel }) {
       </div>
       <div>
         <label style={{ fontSize: 12, color: "#6B7684", display: "block", marginBottom: 4 }}>참고 이미지</label>
-        <ImageUploader images={form.images || []} onChange={imgs => set("images", typeof imgs === "function" ? imgs(form.images) : imgs)} />
+        <ImageUploader 
+          images={form.images || []} 
+          onChange={imgs => set("images", typeof imgs === "function" ? imgs(form.images) : imgs)} 
+          initialFiles={initialImages}
+        />
       </div>
       <div>
         <label style={{ fontSize: 12, color: "#6B7684", display: "block", marginBottom: 4 }}>메모</label>
@@ -359,6 +370,28 @@ export default function App() {
   const [selected, setSelected] = useState(null);
   const [filterStatus, setFilterStatus] = useState("전체");
   const [search, setSearch] = useState("");
+  const [initialImages, setInitialImages] = useState([]);
+
+  useEffect(() => {
+    const handleGlobalPaste = (e) => {
+      if (modal) return; // 모달이 이미 열려있으면 ImageUploader가 처리함
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      const files = [];
+      for (const item of Array.from(items)) {
+        if (item.type.startsWith('image/')) {
+          const file = item.getAsFile();
+          if (file) files.push(file);
+        }
+      }
+      if (files.length > 0) {
+        setInitialImages(files);
+        setModal("add");
+      }
+    };
+    document.addEventListener('paste', handleGlobalPaste);
+    return () => document.removeEventListener('paste', handleGlobalPaste);
+  }, [modal]);
 
   useEffect(() => {
     fetchOrders();
@@ -501,8 +534,8 @@ export default function App() {
       </div>
 
       {modal === "add" && (
-        <Modal title="새 주문 추가" onClose={() => setModal(null)}>
-          <OrderForm onSave={addOrder} onCancel={() => setModal(null)} />
+        <Modal title="새 주문 추가" onClose={() => { setModal(null); setInitialImages([]); }}>
+          <OrderForm onSave={addOrder} onCancel={() => { setModal(null); setInitialImages([]); }} initialImages={initialImages} />
         </Modal>
       )}
       {modal === "edit" && selected && (
