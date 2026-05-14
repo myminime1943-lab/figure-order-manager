@@ -44,18 +44,20 @@ function StatusBadge({ status }) {
 
 function ImageUploader({ images, onChange }) {
   const ref = useRef();
+  const pasteZoneRef = useRef();
   const [uploading, setUploading] = useState(false);
+  const [pasteHover, setPasteHover] = useState(false);
 
   const handleFiles = async (files) => {
     setUploading(true);
     const newImages = [];
     for (const file of Array.from(files)) {
-      const fileExt = file.name.split('.').pop();
+      const fileExt = file.name.split('.').pop() || 'png';
       const fileName = `${Date.now()}_${Math.random().toString(36).slice(2, 7)}.${fileExt}`;
       const { error } = await supabase.storage.from('order-images').upload(fileName, file);
       if (!error) {
         const { data } = supabase.storage.from('order-images').getPublicUrl(fileName);
-        newImages.push({ id: generateId(), src: data.publicUrl, name: file.name });
+        newImages.push({ id: generateId(), src: data.publicUrl, name: file.name || fileName });
       } else {
         alert("이미지 업로드 실패: " + error.message);
       }
@@ -63,6 +65,31 @@ function ImageUploader({ images, onChange }) {
     onChange(prev => [...prev, ...newImages]);
     setUploading(false);
   };
+
+  const handlePaste = async (e) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    const imageFiles = [];
+    for (const item of Array.from(items)) {
+      if (item.type.startsWith('image/')) {
+        const file = item.getAsFile();
+        if (file) {
+          const ext = item.type.split('/')[1] || 'png';
+          const namedFile = new File([file], `paste_${Date.now()}.${ext}`, { type: item.type });
+          imageFiles.push(namedFile);
+        }
+      }
+    }
+    if (imageFiles.length > 0) {
+      e.preventDefault();
+      await handleFiles(imageFiles);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('paste', handlePaste);
+    return () => document.removeEventListener('paste', handlePaste);
+  }, []);
 
   return (
     <div>
@@ -90,6 +117,24 @@ function ImageUploader({ images, onChange }) {
             </>
           )}
         </button>
+        <div
+          ref={pasteZoneRef}
+          onMouseEnter={() => setPasteHover(true)}
+          onMouseLeave={() => setPasteHover(false)}
+          style={{
+            width: 72, height: 72, borderRadius: 8,
+            border: `2px dashed ${pasteHover ? "#4B7BEC" : "#C5CBD5"}`,
+            background: pasteHover ? "#EBF0FD" : "#F8F9FB",
+            display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center",
+            gap: 2, color: pasteHover ? "#4B7BEC" : "#8A93A0",
+            fontSize: 11, cursor: "default",
+            transition: "all 0.2s"
+          }}>
+          <span style={{ fontSize: 18 }}>📋</span>
+          <span>붙여넣기</span>
+          <span style={{ fontSize: 9 }}>Ctrl+V</span>
+        </div>
       </div>
       <input ref={ref} type="file" accept="image/*" multiple style={{ display: "none" }}
         onChange={e => handleFiles(e.target.files)} />
