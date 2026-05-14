@@ -42,7 +42,7 @@ function StatusBadge({ status }) {
   );
 }
 
-function ImageUploader({ images, onChange, initialFiles = [] }) {
+function ImageUploader({ images, onChange, initialFiles = [], onUploading }) {
   const ref = useRef();
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -50,6 +50,7 @@ function ImageUploader({ images, onChange, initialFiles = [] }) {
   const handleFiles = useCallback(async (files) => {
     if (!files || files.length === 0) return;
     setUploading(true);
+    if (onUploading) onUploading(true);
     const newImages = [];
     for (const file of Array.from(files)) {
       const fileExt = file.name?.split('.').pop() || 'png';
@@ -64,7 +65,8 @@ function ImageUploader({ images, onChange, initialFiles = [] }) {
     }
     onChange(prev => [...prev, ...newImages]);
     setUploading(false);
-  }, [onChange]);
+    if (onUploading) onUploading(false);
+  }, [onChange, onUploading]);
 
   const handlePaste = useCallback(async (e) => {
     const items = e.clipboardData?.items;
@@ -167,6 +169,7 @@ function OrderForm({ onSave, onCancel, initialData = null, initialImages = [] })
     description: "", orderDate: "",
     status: "접수", notes: "", images: [], createdAt: new Date().toISOString()
   });
+  const [isUploading, setIsUploading] = useState(false);
   const set = (key, val) => setForm(f => ({ ...f, [key]: val }));
 
   return (
@@ -235,6 +238,7 @@ function OrderForm({ onSave, onCancel, initialData = null, initialImages = [] })
           images={form.images || []} 
           onChange={imgs => set("images", typeof imgs === "function" ? imgs(form.images) : imgs)} 
           initialFiles={initialImages}
+          onUploading={setIsUploading}
         />
       </div>
       <div>
@@ -245,13 +249,15 @@ function OrderForm({ onSave, onCancel, initialData = null, initialImages = [] })
       </div>
       <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
         <button type="button" onClick={onCancel} style={btnSecondary}>취소</button>
-        <button type="button" onClick={() => {
+        <button type="button" disabled={isUploading} onClick={() => {
           if (!form.customerName.trim() || !form.description.trim()) {
             alert("고객명과 주문 내용은 필수입니다.");
             return;
           }
           onSave(form);
-        }} style={btnPrimary}>저장</button>
+        }} style={{ ...btnPrimary, opacity: isUploading ? 0.5 : 1, cursor: isUploading ? "not-allowed" : "pointer" }}>
+          {isUploading ? "이미지 업로드 중..." : "저장"}
+        </button>
       </div>
     </div>
   );
