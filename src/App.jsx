@@ -109,7 +109,31 @@ function ImageUploader({ images, onChange, initialFiles = [], onUploading }) {
 
   return (
     <div onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 8 }}>
+      {/* 텍스트 입력칸 스타일의 붙여넣기 존 */}
+      <div 
+        onClick={() => ref.current.click()}
+        style={{
+          ...inputStyle,
+          background: dragOver ? "#F0F5FF" : "#F8F9FB",
+          border: `1px ${dragOver ? "solid" : "dashed"} ${dragOver ? "#4B7BEC" : "#DDE1E7"}`,
+          height: 42,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 8,
+          cursor: "pointer",
+          marginBottom: 12,
+          color: dragOver ? "#4B7BEC" : "#8A93A0",
+          transition: "all 0.2s"
+        }}
+      >
+        <span style={{ fontSize: 16 }}>{dragOver ? "📥" : "📸"}</span>
+        <span style={{ fontSize: 13, fontWeight: 500 }}>
+          {uploading ? "이미지 업로드 중..." : dragOver ? "여기에 놓으세요" : "클릭하여 선택하거나 이미지를 붙여넣으세요 (Ctrl+V)"}
+        </span>
+      </div>
+
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
         {images.map((img) => (
           <div key={img.id} style={{ position: "relative" }}>
             <img src={img.src} alt={img.name} style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 10, border: "1px solid #E0E4EA" }} />
@@ -119,29 +143,6 @@ function ImageUploader({ images, onChange, initialFiles = [], onUploading }) {
               style={{ position: "absolute", top: -6, right: -6, width: 22, height: 22, borderRadius: "50%", background: "#E24B4A", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}>×</button>
           </div>
         ))}
-        
-        <div
-          onClick={() => ref.current.click()}
-          style={{
-            flex: 1, minWidth: 140, height: 80, borderRadius: 10,
-            border: `2px dashed ${dragOver ? "#4B7BEC" : "#C5CBD5"}`,
-            background: dragOver ? "#F0F5FF" : "#F8F9FB",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            gap: 10, cursor: "pointer", transition: "all 0.2s",
-            position: "relative", overflow: "hidden"
-          }}>
-          {uploading ? (
-            <div style={{ fontSize: 13, color: "#4B7BEC", fontWeight: 600 }}>업로드 중...</div>
-          ) : (
-            <div style={{ textAlign: "center", color: dragOver ? "#4B7BEC" : "#8A93A0" }}>
-              <div style={{ fontSize: 20, marginBottom: 2 }}>{dragOver ? "📥" : "📋"}</div>
-              <div style={{ fontSize: 12, fontWeight: 500 }}>
-                {dragOver ? "여기에 놓으세요" : "클릭하여 선택하거나"}
-              </div>
-              <div style={{ fontSize: 11, opacity: 0.8 }}>이미지 붙여넣기 (Ctrl+V)</div>
-            </div>
-          )}
-        </div>
       </div>
       <input ref={ref} type="file" accept="image/*" multiple style={{ display: "none" }}
         onChange={e => handleFiles(e.target.files)} />
