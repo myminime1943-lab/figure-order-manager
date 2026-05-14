@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>데이터 마이그레이션</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .card { background: #1e293b; border-radius: 16px; padding: 40px; max-width: 520px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+    h1 { font-size: 22px; margin-bottom: 8px; }
+    .sub { color: #94a3b8; font-size: 14px; margin-bottom: 24px; }
+    .info { background: #334155; border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; font-size: 14px; line-height: 1.7; }
+    .info strong { color: #38bdf8; }
+    button { width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    #startBtn { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: #fff; margin-bottom: 12px; }
+    #startBtn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(59,130,246,0.4); }
+    #startBtn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+    .log { background: #0f172a; border-radius: 10px; padding: 14px; margin-top: 16px; font-size: 13px; max-height: 300px; overflow-y: auto; line-height: 1.8; font-family: 'Consolas', monospace; }
+    .log .ok { color: #4ade80; }
+    .log .err { color: #f87171; }
+    .log .info { color: #38bdf8; background: none; padding: 0; margin: 0; border-radius: 0; }
+    .progress { background: #334155; border-radius: 8px; height: 8px; margin-top: 12px; overflow: hidden; }
+    .progress-bar { height: 100%; background: linear-gradient(90deg, #3b82f6, #8b5cf6); border-radius: 8px; transition: width 0.3s; width: 0%; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>📦 데이터 마이그레이션</h1>
+    <p class="sub">로컬 브라우저 → Supabase 클라우드</p>
+    <div class="info" id="statusInfo">
+      로컬 스토리지의 주문 데이터를 검색하는 중...
+    </div>
+    <button id="startBtn" disabled>마이그레이션 시작</button>
+    <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="log" id="log"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script>
+    const SUPABASE_URL = 'https://wbipmhixcsxpswwetlwn.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_orqOvR5GeVjjlvqDgIWRXQ_obOlhWim';
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const logEl = document.getElementById('log');
+    const statusInfo = document.getElementById('statusInfo');
+    const startBtn = document.getElementById('startBtn');
+    const progressBar = document.getElementById('progressBar');
+
+    function log(msg, type = 'info') {
+      const line = document.createElement('div');
+      line.className = type;
+      line.textContent = msg;
+      logEl.appendChild(line);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    // 1) 로컬 스토리지에서 기존 주문 데이터 읽기
+    let orders = [];
+    try {
+      const raw = localStorage.getItem('figure_orders');
+      if (raw) orders = JSON.parse(raw);
+    } catch (e) {}
+
+    if (orders.length === 0) {
+      statusInfo.innerHTML = '⚠️ 로컬 스토리지에 주문 데이터가 <strong>없습니다</strong>.<br>이 브라우저에서 기존 앱(localhost:3000)을 사용했던 적이 있는지 확인해 주세요.';
+      log('로컬 스토리지에 figure_orders 데이터가 없습니다.', 'err');
+    } else {
+      statusInfo.innerHTML = `로컬 스토리지에서 <strong>${orders.length}건</strong>의 주문을 발견했습니다. 아래 버튼을 눌러 Supabase로 이전하세요.`;
+      startBtn.disabled = false;
+      log(`${orders.length}건의 주문 데이터 발견`, 'ok');
+    }
+
+    // 2) Base64 이미지를 Supabase Storage에 업로드
+    async function uploadBase64Image(base64Str, originalName) {
+      try {
+        const matches = base64Str.match(/^data:([^;]+);base64,(.+)$/);
+        if (!matches) return base64Str; // base64가 아니면 원본 URL 그대로 반환
+
+        const mime = matches[1];
+        const ext = mime.split('/')[1] || 'png';
+        const byteStr = atob(matches[2]);
+        const arr = new Uint8Array(byteStr.length);
+        for (let i = 0; i < byteStr.length; i++) arr[i] = byteStr.charCodeAt(i);
+        const blob = new Blob([arr], { type: mime });
+
+        const fileName = `migrate_${Date.now()}_${Math.random().toString(36).slice(2, 6)}.${ext}`;
+        const { error } = await sb.storage.from('order-images').upload(fileName, blob);
+        if (error) {
+          log(`  이미지 업로드 실패: ${error.message}`, 'err');
+          return null;
+        }
+        const { data } = sb.storage.from('order-images').getPublicUrl(fileName);
+        return data.publicUrl;
+      } catch (e) {
+        log(`  이미지 처리 오류: ${e.message}`, 'err');
+        return null;
+      }
+    }
+
+    // 3) 마이그레이션 실행
+    startBtn.addEventListener('click', async () => {
+      startBtn.disabled = true;
+      startBtn.textContent = '마이그레이션 진행 중...';
+      let success = 0, fail = 0;
+
+      for (let i = 0; i < orders.length; i++) {
+        const order = { ...orders[i] };
+        const pct = Math.round(((i + 1) / orders.length) * 100);
+        progressBar.style.width = pct + '%';
+        log(`[${i + 1}/${orders.length}] ${order.customerName} 처리 중...`, 'info');
+
+        // 이미지 마이그레이션 (base64 → Storage URL)
+        if (order.images && order.images.length > 0) {
+          const newImages = [];
+          for (const img of order.images) {
+            if (img.src && img.src.startsWith('data:')) {
+              const url = await uploadBase64Image(img.src, img.name);
+              if (url) {
+                newImages.push({ id: img.id, src: url, name: img.name });
+                log(`  ✅ 이미지 업로드 완료: ${img.name}`, 'ok');
+              }
+            } else {
+              newImages.push(img); // 이미 URL이면 그대로
+            }
+          }
+          order.images = newImages;
+        }
+
+        // DB에 삽입
+        const { error } = await sb.from('orders').upsert([order], { onConflict: 'id' });
+        if (error) {
+          log(`  ❌ DB 저장 실패: ${error.message}`, 'err');
+          fail++;
+        } else {
+          log(`  ✅ ${order.customerName} 저장 완료`, 'ok');
+          success++;
+        }
+      }
+
+      progressBar.style.width = '100%';
+      startBtn.textContent = '마이그레이션 완료!';
+      statusInfo.innerHTML = `🎉 완료! <strong>${success}건 성공</strong>, ${fail}건 실패`;
+      log(`\n========== 마이그레이션 완료 ==========`, 'ok');
+      log(`성공: ${success}건 / 실패: ${fail}건`, success > 0 ? 'ok' : 'err');
+    });
+  </script>
+</body>
+</html>
