@@ -281,14 +281,31 @@ function OrderCard({ order, onClick }) {
         </div>
       )}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-          <span style={{ fontWeight: 600, fontSize: 15 }}>{order.customerName}</span>
-          <StatusBadge status={order.status} />
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ fontWeight: 600, fontSize: 16 }}>{order.customerName}</span>
+            <StatusBadge status={order.status} />
+          </div>
+          {order.notes && (
+            <div style={{ 
+              fontSize: 12, 
+              color: "#475569", 
+              background: "rgba(0,0,0,0.04)", 
+              padding: "4px 10px", 
+              borderRadius: 6,
+              maxWidth: "40%",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap"
+            }}>
+              {order.notes}
+            </div>
+          )}
         </div>
-        <p style={{ fontSize: 13, color: "#6B7684", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{order.description}</p>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
-          <span style={{ fontSize: 12, color: "#A0ADB4" }}>{order.platform}</span>
-          {order.orderDate && <span style={{ fontSize: 11, color: "#A0ADB4" }}>{order.orderDate}</span>}
+        <p style={{ fontSize: 14, color: "#64748b", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{order.description}</p>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
+          <span style={{ fontSize: 12, color: "#94a3b8", fontWeight: 500 }}>{order.platform}</span>
+          {order.orderDate && <span style={{ fontSize: 12, color: "#94a3b8" }}>{order.orderDate}</span>}
         </div>
       </div>
       {order.images?.length > 1 && (
