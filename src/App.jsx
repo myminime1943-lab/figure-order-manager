@@ -3,10 +3,10 @@ import "./App.css";
 import { supabase } from "./supabase";
 
 const STATUS = {
-  접수: { label: "접수", color: "#4B7BEC", bg: "#EBF0FD" },
-  제작중: { label: "제작중", color: "#F7B731", bg: "#FEF8EA" },
-  완성: { label: "완성", color: "#20bf6b", bg: "#E8FDF2" },
-  배송완료: { label: "배송완료", color: "#A0ADB4", bg: "#F2F4F5" },
+  접수: { label: "접수", color: "#2563eb", bg: "#eff6ff" },
+  제작중: { label: "제작중", color: "#d97706", bg: "#fffbeb" },
+  완성: { label: "완성", color: "#059669", bg: "#ecfdf5" },
+  배송완료: { label: "배송완료", color: "#475569", bg: "#f8fafc" },
 };
 
 const PLATFORMS = ["스마트스토어", "위벨롭먼트", "가맹점", "쿠팡", "카카오 비즈니스센터", "직접방문", "기타"];
@@ -109,38 +109,37 @@ function ImageUploader({ images, onChange, initialFiles = [], onUploading }) {
 
   return (
     <div onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
-      {/* 텍스트 입력칸 스타일의 붙여넣기 존 */}
       <div 
         onClick={() => ref.current.click()}
         style={{
           ...inputStyle,
-          background: dragOver ? "#F0F5FF" : "#F8F9FB",
-          border: `1px ${dragOver ? "solid" : "dashed"} ${dragOver ? "#4B7BEC" : "#DDE1E7"}`,
-          height: 42,
+          background: dragOver ? "#f0f7ff" : "#ffffff",
+          border: `1px ${dragOver ? "solid" : "dashed"} ${dragOver ? "#2563eb" : "#e2e8f0"}`,
+          height: 50,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          gap: 8,
+          gap: 12,
           cursor: "pointer",
-          marginBottom: 12,
-          color: dragOver ? "#4B7BEC" : "#8A93A0",
+          marginBottom: 16,
+          color: dragOver ? "#2563eb" : "#64748b",
           transition: "all 0.2s"
         }}
       >
-        <span style={{ fontSize: 16 }}>{dragOver ? "📥" : "📸"}</span>
-        <span style={{ fontSize: 13, fontWeight: 500 }}>
-          {uploading ? "이미지 업로드 중..." : dragOver ? "여기에 놓으세요" : "클릭하여 선택하거나 이미지를 붙여넣으세요 (Ctrl+V)"}
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span style={{ fontSize: 14, fontWeight: 500 }}>
+          {uploading ? "Uploading..." : dragOver ? "Drop to upload" : "Click to select or Paste image (Ctrl+V)"}
         </span>
       </div>
 
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
         {images.map((img) => (
-          <div key={img.id} style={{ position: "relative" }}>
-            <img src={img.src} alt={img.name} style={{ width: 100, height: 100, objectFit: "cover", borderRadius: 12, border: "1px solid #E0E4EA" }} />
+          <div key={img.id} style={{ position: "relative", group: "true" }}>
+            <img src={img.src} alt={img.name} style={{ width: 110, height: 110, objectFit: "cover", borderRadius: 12, border: "1px solid #f1f5f9" }} />
             <button
               type="button"
               onClick={() => onChange(images.filter(i => i.id !== img.id))}
-              style={{ position: "absolute", top: -8, right: -8, width: 24, height: 24, borderRadius: "50%", background: "#E24B4A", color: "#fff", border: "none", cursor: "pointer", fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 6px rgba(0,0,0,0.15)" }}>×</button>
+              style={{ position: "absolute", top: -8, right: -8, width: 26, height: 26, borderRadius: "50%", background: "#ef4444", color: "#fff", border: "2px solid #fff", cursor: "pointer", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }}>×</button>
           </div>
         ))}
       </div>
@@ -151,17 +150,17 @@ function ImageUploader({ images, onChange, initialFiles = [], onUploading }) {
 }
 
 const inputStyle = {
-  width: "100%", padding: "9px 12px", borderRadius: 8, border: "1px solid #DDE1E7",
+  width: "100%", padding: "12px 16px", borderRadius: 10, border: "1px solid #e2e8f0",
   fontSize: 14, outline: "none", boxSizing: "border-box", fontFamily: "inherit",
-  background: "#fff"
+  background: "#fff", color: "#0f172a"
 };
 const btnPrimary = {
-  padding: "9px 20px", borderRadius: 8, border: "none", background: "#4B7BEC",
-  color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer"
+  padding: "12px 24px", borderRadius: 10, border: "none", background: "#2563eb",
+  color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer", transition: "all 0.2s"
 };
 const btnSecondary = {
-  padding: "9px 16px", borderRadius: 8, border: "1px solid #DDE1E7", background: "#fff",
-  color: "#4A5568", fontSize: 14, cursor: "pointer"
+  padding: "12px 20px", borderRadius: 10, border: "1px solid #e2e8f0", background: "#fff",
+  color: "#475569", fontSize: 14, fontWeight: 500, cursor: "pointer", transition: "all 0.2s"
 };
 
 function OrderForm({ onSave, onCancel, initialData = null, initialImages = [] }) {
@@ -271,13 +270,15 @@ function OrderCard({ order, onClick }) {
   return (
     <div onClick={onClick} className="order-card" style={{ 
       background: bg,
-      opacity: isCompleted ? 0.5 : 1,
-      filter: isCompleted ? "grayscale(30%)" : "none"
+      opacity: isCompleted ? 0.6 : 1,
+      filter: isCompleted ? "grayscale(40%)" : "none"
     }}>
       {thumb ? (
-        <img src={thumb.src} alt="" style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 10, flexShrink: 0 }} />
+        <img src={thumb.src} alt="" style={{ width: 90, height: 90, objectFit: "cover", borderRadius: 12, flexShrink: 0, border: "1px solid rgba(0,0,0,0.05)" }} />
       ) : (
-        <div style={{ width: 80, height: 80, borderRadius: 10, background: "#F2F4F6", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>🎨</div>
+        <div style={{ width: 90, height: 90, borderRadius: 12, background: "#f1f5f9", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#94a3b8" }}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
       )}
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
@@ -365,10 +366,16 @@ function DetailModal({ order, onEdit, onDelete, onStatusChange, onClose }) {
             ))}
           </div>
         </div>
-        <div style={{ display: "flex", gap: 8, paddingTop: 4 }}>
-          <button type="button" onClick={onEdit} style={btnSecondary}>✏️ 수정</button>
-          <button type="button" onClick={() => { if (window.confirm("삭제하시겠습니까?")) onDelete(); }}
-            style={{ ...btnSecondary, color: "#E24B4A", borderColor: "#E24B4A33" }}>🗑 삭제</button>
+        <div style={{ display: "flex", gap: 12, paddingTop: 12 }}>
+          <button type="button" onClick={onEdit} style={{...btnSecondary, flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8}}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Edit
+          </button>
+          <button type="button" onClick={() => { if (window.confirm("Are you sure you want to delete this order?")) onDelete(); }}
+            style={{ ...btnSecondary, flex: 1, color: "#ef4444", borderColor: "#fee2e2", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+            Delete
+          </button>
         </div>
       </div>
     </Modal>
@@ -507,51 +514,59 @@ export default function App() {
 
   return (
     <div className="app-container">
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 40 }}>
         <div>
-          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: "#1A202C" }}>🎨 주문 관리</h1>
-          <p style={{ margin: "2px 0 0", fontSize: 13, color: "#A0ADB4" }}>피규어 제작 주문 현황</p>
+          <h1 style={{ margin: 0, fontSize: 28, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.025em" }}>주문 관리 시스템</h1>
+          <p style={{ margin: "4px 0 0", fontSize: 14, color: "#64748b" }}>마이미니미 피규어 제작 워크플로우</p>
         </div>
-        <button type="button" onClick={() => setModal("add")} style={btnPrimary}>+ 새 주문</button>
+        <button type="button" onClick={() => setModal("add")} style={{...btnPrimary, display: "flex", alignItems: "center", gap: 8}}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          새 주문 추가
+        </button>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 32 }}>
         {Object.entries(counts).map(([s, c]) => (
-          <div key={s} style={{ background: STATUS[s].bg, borderRadius: 10, padding: "10px 12px", textAlign: "center", border: `1px solid ${STATUS[s].color}22` }}>
-            <div style={{ fontSize: 20, fontWeight: 700, color: STATUS[s].color }}>{c}</div>
-            <div style={{ fontSize: 11, color: STATUS[s].color, fontWeight: 500 }}>{s}</div>
+          <div key={s} style={{ background: STATUS[s].bg, borderRadius: 16, padding: "16px", textAlign: "center", border: `1px solid ${STATUS[s].color}15`, boxShadow: "0 1px 2px rgba(0,0,0,0.02)" }}>
+            <div style={{ fontSize: 24, fontWeight: 800, color: STATUS[s].color }}>{c}</div>
+            <div style={{ fontSize: 12, color: STATUS[s].color, fontWeight: 600, marginTop: 2 }}>{s}</div>
           </div>
         ))}
       </div>
 
-      <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: 12, marginBottom: 24, flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           {["전체", ...Object.keys(STATUS)].map(s => (
             <button type="button" key={s} onClick={() => setFilterStatus(s)} style={{
-              padding: "6px 14px", borderRadius: 20, border: "1px solid",
-              borderColor: filterStatus === s ? "#4B7BEC" : "#E0E4EA",
-              background: filterStatus === s ? "#EBF0FD" : "#fff",
-              color: filterStatus === s ? "#4B7BEC" : "#6B7684",
-              fontWeight: filterStatus === s ? 600 : 400, cursor: "pointer", fontSize: 13
-            }}>{s} ({s === "전체" ? orders.length : counts[s]})</button>
+              padding: "8px 18px", borderRadius: 12, border: "1px solid",
+              borderColor: filterStatus === s ? "#2563eb" : "#e2e8f0",
+              background: filterStatus === s ? "#eff6ff" : "#fff",
+              color: filterStatus === s ? "#2563eb" : "#64748b",
+              fontWeight: filterStatus === s ? 600 : 500, cursor: "pointer", fontSize: 13, transition: "all 0.2s"
+            }}>{s} <span style={{ opacity: 0.6, marginLeft: 4 }}>{s === "전체" ? orders.length : counts[s]}</span></button>
           ))}
         </div>
-        <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 13, color: "#6B7684", padding: "4px 8px", background: "#f1f3f5", borderRadius: 8 }}>
-          <input type="checkbox" checked={hideCompleted} onChange={e => setHideCompleted(e.target.checked)} />
-          완료 숨기기
+        <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 13, color: "#64748b", padding: "8px 12px", background: "#f8fafc", borderRadius: 10, border: "1px solid #e2e8f0" }}>
+          <input type="checkbox" checked={hideCompleted} onChange={e => setHideCompleted(e.target.checked)} style={{ width: 16, height: 16, cursor: "pointer" }} />
+          <span>완료된 주문 숨기기</span>
         </label>
       </div>
 
-      <input value={search} onChange={e => setSearch(e.target.value)}
-        placeholder="🔍  이름, 내용, 연락처 검색..."
-        style={{ ...inputStyle, marginBottom: 12, background: "#F8F9FB" }} />
+      <div style={{ position: "relative", marginBottom: 32 }}>
+        <input value={search} onChange={e => setSearch(e.target.value)}
+          placeholder="고객명, 내용, 연락처로 검색..."
+          style={{ ...inputStyle, paddingLeft: 44, background: "#fff", boxShadow: "var(--shadow-sm)" }} />
+        <div style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", color: "#94a3b8" }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+      </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         {filtered.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "40px 0", color: "#C5CBD5" }}>
-            <div style={{ fontSize: 40 }}>📭</div>
-            <p style={{ marginTop: 8 }}>
-              {search || filterStatus !== "전체" ? "검색 결과가 없습니다" : "아직 주문이 없습니다. + 새 주문을 눌러보세요!"}
+          <div style={{ textAlign: "center", padding: "80px 0", color: "#94a3b8" }}>
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: 16, opacity: 0.5 }}><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            <p style={{ margin: 0, fontSize: 15, fontWeight: 500 }}>
+              {search || filterStatus !== "전체" ? "검색 결과가 없습니다" : "등록된 주문이 없습니다"}
             </p>
           </div>
         ) : filtered.map(order => (
