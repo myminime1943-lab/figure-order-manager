@@ -227,7 +227,7 @@ function OrderForm({ onSave, onCancel, initialData = null, initialImages = [] })
           placeholder="예: 아크릴 케이스, 명패, 추가 소품 등..." style={inputStyle} />
       </div>
       <div>
-        <label style={{ fontSize: 12, color: "#6B7684", display: "block", marginBottom: 4 }}>주문 내용 *</label>
+        <label style={{ fontSize: 12, color: "#6B7684", display: "block", marginBottom: 4 }}>주문 내용</label>
         <textarea value={form.description} onChange={e => set("description", e.target.value)}
           placeholder="피규어 내용, 크기, 소재 등 상세 내용..." rows={3}
           style={{ ...inputStyle, resize: "vertical" }} />
@@ -250,8 +250,8 @@ function OrderForm({ onSave, onCancel, initialData = null, initialImages = [] })
       <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
         <button type="button" onClick={onCancel} style={btnSecondary}>취소</button>
         <button type="button" disabled={isUploading} onClick={() => {
-          if (!form.customerName.trim() || !form.description.trim()) {
-            alert("고객명과 주문 내용은 필수입니다.");
+          if (!form.customerName.trim()) {
+            alert("고객명은 필수입니다.");
             return;
           }
           onSave(form);
