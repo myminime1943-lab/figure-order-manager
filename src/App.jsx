@@ -538,7 +538,7 @@ export default function App() {
       )}
       {modal === "edit" && selected && (
         <Modal title="주문 수정" onClose={() => setModal("detail")}>
-          <OrderForm initial={selected} onSave={updateOrder} onCancel={() => setModal("detail")} />
+          <OrderForm initialData={selected} onSave={updateOrder} onCancel={() => setModal("detail")} />
         </Modal>
       )}
       {modal === "detail" && selected && (
