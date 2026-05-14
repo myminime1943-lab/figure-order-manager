@@ -136,11 +136,11 @@ function ImageUploader({ images, onChange, initialFiles = [], onUploading }) {
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
         {images.map((img) => (
           <div key={img.id} style={{ position: "relative" }}>
-            <img src={img.src} alt={img.name} style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 10, border: "1px solid #E0E4EA" }} />
+            <img src={img.src} alt={img.name} style={{ width: 100, height: 100, objectFit: "cover", borderRadius: 12, border: "1px solid #E0E4EA" }} />
             <button
               type="button"
               onClick={() => onChange(images.filter(i => i.id !== img.id))}
-              style={{ position: "absolute", top: -6, right: -6, width: 22, height: 22, borderRadius: "50%", background: "#E24B4A", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}>×</button>
+              style={{ position: "absolute", top: -8, right: -8, width: 24, height: 24, borderRadius: "50%", background: "#E24B4A", color: "#fff", border: "none", cursor: "pointer", fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 6px rgba(0,0,0,0.15)" }}>×</button>
           </div>
         ))}
       </div>
@@ -270,9 +270,9 @@ function OrderCard({ order, onClick }) {
   return (
     <div onClick={onClick} className="order-card" style={{ background: bg }}>
       {thumb ? (
-        <img src={thumb.src} alt="" style={{ width: 56, height: 56, objectFit: "cover", borderRadius: 8, flexShrink: 0 }} />
+        <img src={thumb.src} alt="" style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 10, flexShrink: 0 }} />
       ) : (
-        <div style={{ width: 56, height: 56, borderRadius: 8, background: "#F2F4F6", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>🎨</div>
+        <div style={{ width: 80, height: 80, borderRadius: 10, background: "#F2F4F6", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>🎨</div>
       )}
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
@@ -315,9 +315,10 @@ function DetailModal({ order, onEdit, onDelete, onStatusChange, onClose }) {
           <StatusBadge status={order.status} />
         </div>
         {order.images?.length > 0 && (
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             {order.images.map(img => (
-              <img key={img.id} src={img.src} alt="" style={{ width: 100, height: 100, objectFit: "cover", borderRadius: 8, border: "1px solid #E0E4EA" }} />
+              <img key={img.id} src={img.src} alt="" style={{ width: 160, height: 160, objectFit: "cover", borderRadius: 12, border: "1px solid #E0E4EA", cursor: "zoom-in" }} 
+                onClick={() => window.open(img.src, "_blank")} />
             ))}
           </div>
         )}
