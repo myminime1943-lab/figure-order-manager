@@ -12,13 +12,13 @@ const STATUS = {
 const PLATFORMS = ["스마트스토어", "위벨롭먼트", "가맹점", "쿠팡", "카카오 비즈니스센터", "직접방문", "기타"];
 
 const PLATFORM_COLORS = {
-  "스마트스토어": "#eafaf1",
-  "위벨롭먼트": "#f0f0f0",
-  "가맹점": "#e6f4fa",
-  "쿠팡": "#fceaea",
-  "카카오 비즈니스센터": "#fdf8e4",
-  "직접방문": "#f8f3eb",
-  "기타": "#fff"
+  "스마트스토어": "#ffffff",
+  "위벨롭먼트": "#ffffff",
+  "가맹점": "#ffffff",
+  "쿠팡": "#ffffff",
+  "카카오 비즈니스센터": "#ffffff",
+  "직접방문": "#ffffff",
+  "기타": "#ffffff"
 };
 
 function generateId() {
@@ -148,9 +148,9 @@ function ImageUploader({ images, onChange, initialFiles = [], onUploading }) {
 }
 
 const inputStyle = {
-  width: "100%", padding: "12px 16px", borderRadius: 10, border: "1px solid #e2e8f0",
+  width: "100%", padding: "12px 16px", borderRadius: 12, border: "1px solid #f1f5f9",
   fontSize: 14, outline: "none", boxSizing: "border-box", fontFamily: "inherit",
-  background: "#fff", color: "#0f172a"
+  background: "#ffffff", color: "#0f172a"
 };
 const btnPrimary = {
   padding: "12px 24px", borderRadius: 10, border: "none", background: "#2563eb",
@@ -546,7 +546,7 @@ export default function App() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 32 }}>
         {Object.entries(counts).map(([s, c]) => (
-          <div key={s} style={{ background: STATUS[s].bg, borderRadius: 16, padding: "16px", textAlign: "center", border: `1px solid ${STATUS[s].color}15`, boxShadow: "0 1px 2px rgba(0,0,0,0.02)" }}>
+          <div key={s} style={{ background: "#ffffff", borderRadius: 16, padding: "16px", textAlign: "center", border: `1px solid ${STATUS[s].color}15`, boxShadow: "var(--shadow-sm)" }}>
             <div style={{ fontSize: 24, fontWeight: 800, color: STATUS[s].color }}>{c}</div>
             <div style={{ fontSize: 12, color: STATUS[s].color, fontWeight: 600, marginTop: 2 }}>{s}</div>
           </div>
@@ -558,14 +558,14 @@ export default function App() {
           {["전체", ...Object.keys(STATUS)].map(s => (
             <button type="button" key={s} onClick={() => setFilterStatus(s)} style={{
               padding: "8px 18px", borderRadius: 12, border: "1px solid",
-              borderColor: filterStatus === s ? "#2563eb" : "#e2e8f0",
-              background: filterStatus === s ? "#eff6ff" : "#fff",
+              borderColor: filterStatus === s ? "#2563eb" : "#f1f5f9",
+              background: filterStatus === s ? "#eff6ff" : "#ffffff",
               color: filterStatus === s ? "#2563eb" : "#64748b",
               fontWeight: filterStatus === s ? 600 : 500, cursor: "pointer", fontSize: 13, transition: "all 0.2s"
             }}>{s} <span style={{ opacity: 0.6, marginLeft: 4 }}>{s === "전체" ? orders.length : counts[s]}</span></button>
           ))}
         </div>
-        <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 13, color: "#64748b", padding: "8px 12px", background: "#f8fafc", borderRadius: 10, border: "1px solid #e2e8f0" }}>
+        <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 13, color: "#64748b", padding: "8px 12px", background: "#ffffff", borderRadius: 12, border: "1px solid #f1f5f9" }}>
           <input type="checkbox" checked={hideCompleted} onChange={e => setHideCompleted(e.target.checked)} style={{ width: 16, height: 16, cursor: "pointer" }} />
           <span>완료된 주문 숨기기</span>
         </label>
