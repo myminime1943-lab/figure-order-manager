@@ -34,11 +34,9 @@ function formatDate(dateStr) {
 function StatusBadge({ status }) {
   const s = STATUS[status] || STATUS["접수"];
   return (
-    <span style={{
-      fontSize: 12, fontWeight: 600, padding: "3px 10px",
-      borderRadius: 20, color: s.color, background: s.bg,
-      border: `1px solid ${s.color}33`
-    }}>{s.label}</span>
+    <span className="status-badge" style={{ color: s.color, background: s.bg, borderColor: `${s.color}20` }}>
+      {s.label}
+    </span>
   );
 }
 
@@ -132,14 +130,14 @@ function ImageUploader({ images, onChange, initialFiles = [], onUploading }) {
         </span>
       </div>
 
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 14 }}>
         {images.map((img) => (
-          <div key={img.id} style={{ position: "relative", group: "true" }}>
-            <img src={img.src} alt={img.name} style={{ width: 110, height: 110, objectFit: "cover", borderRadius: 12, border: "1px solid #f1f5f9" }} />
+          <div key={img.id} style={{ position: "relative" }}>
+            <img src={img.src} alt={img.name} style={{ width: 110, height: 110, objectFit: "cover", borderRadius: 12, border: "1px solid #e2e8f0", boxShadow: "var(--shadow-sm)" }} />
             <button
               type="button"
               onClick={() => onChange(images.filter(i => i.id !== img.id))}
-              style={{ position: "absolute", top: -8, right: -8, width: 26, height: 26, borderRadius: "50%", background: "#ef4444", color: "#fff", border: "2px solid #fff", cursor: "pointer", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }}>×</button>
+              style={{ position: "absolute", top: -8, right: -8, width: 28, height: 28, borderRadius: "50%", background: "#ef4444", color: "#fff", border: "2px solid #fff", cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "var(--shadow-md)" }}>×</button>
           </div>
         ))}
       </div>
@@ -281,31 +279,35 @@ function OrderCard({ order, onClick }) {
         </div>
       )}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontWeight: 600, fontSize: 16 }}>{order.customerName}</span>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <span style={{ fontWeight: 800, fontSize: 18, color: "var(--text-main)", letterSpacing: "-0.01em" }}>{order.customerName}</span>
             <StatusBadge status={order.status} />
           </div>
           {order.notes && (
             <div style={{ 
               fontSize: 12, 
-              color: "#475569", 
-              background: "rgba(0,0,0,0.04)", 
-              padding: "4px 10px", 
-              borderRadius: 6,
-              maxWidth: "40%",
+              color: "var(--text-secondary)", 
+              background: "#f1f5f9", 
+              padding: "5px 12px", 
+              borderRadius: 8,
+              maxWidth: "45%",
               overflow: "hidden",
               textOverflow: "ellipsis",
-              whiteSpace: "nowrap"
+              whiteSpace: "nowrap",
+              fontWeight: 500,
+              border: "1px solid #e2e8f0"
             }}>
               {order.notes}
             </div>
           )}
         </div>
-        <p style={{ fontSize: 14, color: "#64748b", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{order.description}</p>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
-          <span style={{ fontSize: 12, color: "#94a3b8", fontWeight: 500 }}>{order.platform}</span>
-          {order.orderDate && <span style={{ fontSize: 12, color: "#94a3b8" }}>{order.orderDate}</span>}
+        <p style={{ fontSize: 15, color: "var(--text-secondary)", margin: "0 0 12px 0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", lineHeight: 1.4 }}>{order.description || "주문 내용 없음"}</p>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+            <span style={{ fontSize: 13, color: "var(--text-muted)", fontWeight: 600, background: "#f8fafc", padding: "2px 8px", borderRadius: 4, border: "1px solid #f1f5f9" }}>{order.platform}</span>
+            {order.orderDate && <span style={{ fontSize: 13, color: "var(--text-muted)", fontWeight: 500 }}>{order.orderDate}</span>}
+          </div>
         </div>
       </div>
       {order.images?.length > 1 && (
