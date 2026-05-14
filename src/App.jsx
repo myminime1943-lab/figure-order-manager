@@ -44,15 +44,15 @@ function StatusBadge({ status }) {
 
 function ImageUploader({ images, onChange, initialFiles = [] }) {
   const ref = useRef();
-  const pasteZoneRef = useRef();
   const [uploading, setUploading] = useState(false);
-  const [pasteHover, setPasteHover] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
 
   const handleFiles = useCallback(async (files) => {
+    if (!files || files.length === 0) return;
     setUploading(true);
     const newImages = [];
     for (const file of Array.from(files)) {
-      const fileExt = file.name.split('.').pop() || 'png';
+      const fileExt = file.name?.split('.').pop() || 'png';
       const fileName = `${Date.now()}_${Math.random().toString(36).slice(2, 7)}.${fileExt}`;
       const { error } = await supabase.storage.from('order-images').upload(fileName, file);
       if (!error) {
@@ -91,56 +91,54 @@ function ImageUploader({ images, onChange, initialFiles = [] }) {
     return () => document.removeEventListener('paste', handlePaste);
   }, [handlePaste]);
 
-  // initialFiles(모달 열릴 때 전달된 이미지들) 처리
   useEffect(() => {
     if (initialFiles && initialFiles.length > 0) {
       handleFiles(initialFiles);
     }
   }, [initialFiles, handleFiles]);
 
+  const onDragOver = (e) => { e.preventDefault(); setDragOver(true); };
+  const onDragLeave = () => setDragOver(false);
+  const onDrop = async (e) => {
+    e.preventDefault();
+    setDragOver(false);
+    if (e.dataTransfer.files) await handleFiles(e.dataTransfer.files);
+  };
+
   return (
-    <div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
+    <div onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 8 }}>
         {images.map((img) => (
           <div key={img.id} style={{ position: "relative" }}>
-            <img src={img.src} alt={img.name} style={{ width: 72, height: 72, objectFit: "cover", borderRadius: 8, border: "1px solid #E0E4EA" }} />
+            <img src={img.src} alt={img.name} style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 10, border: "1px solid #E0E4EA" }} />
             <button
               type="button"
               onClick={() => onChange(images.filter(i => i.id !== img.id))}
-              style={{ position: "absolute", top: -6, right: -6, width: 20, height: 20, borderRadius: "50%", background: "#E24B4A", color: "#fff", border: "none", cursor: "pointer", fontSize: 11, display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}>×</button>
+              style={{ position: "absolute", top: -6, right: -6, width: 22, height: 22, borderRadius: "50%", background: "#E24B4A", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}>×</button>
           </div>
         ))}
-        <button type="button" onClick={() => ref.current.click()} disabled={uploading} style={{
-          width: 72, height: 72, borderRadius: 8, border: "2px dashed #C5CBD5",
-          background: "#F8F9FB", cursor: "pointer", display: "flex", flexDirection: "column",
-          alignItems: "center", justifyContent: "center", gap: 2, color: "#8A93A0", fontSize: 11, opacity: uploading ? 0.5 : 1
-        }}>
-          {uploading ? (
-            <span style={{ fontSize: 12 }}>업로드 중...</span>
-          ) : (
-            <>
-              <span style={{ fontSize: 22 }}>+</span>
-              <span>이미지</span>
-            </>
-          )}
-        </button>
+        
         <div
-          ref={pasteZoneRef}
-          onMouseEnter={() => setPasteHover(true)}
-          onMouseLeave={() => setPasteHover(false)}
+          onClick={() => ref.current.click()}
           style={{
-            width: 72, height: 72, borderRadius: 8,
-            border: `2px dashed ${pasteHover ? "#4B7BEC" : "#C5CBD5"}`,
-            background: pasteHover ? "#EBF0FD" : "#F8F9FB",
-            display: "flex", flexDirection: "column",
-            alignItems: "center", justifyContent: "center",
-            gap: 2, color: pasteHover ? "#4B7BEC" : "#8A93A0",
-            fontSize: 11, cursor: "default",
-            transition: "all 0.2s"
+            flex: 1, minWidth: 140, height: 80, borderRadius: 10,
+            border: `2px dashed ${dragOver ? "#4B7BEC" : "#C5CBD5"}`,
+            background: dragOver ? "#F0F5FF" : "#F8F9FB",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            gap: 10, cursor: "pointer", transition: "all 0.2s",
+            position: "relative", overflow: "hidden"
           }}>
-          <span style={{ fontSize: 18 }}>📋</span>
-          <span>붙여넣기</span>
-          <span style={{ fontSize: 9 }}>Ctrl+V</span>
+          {uploading ? (
+            <div style={{ fontSize: 13, color: "#4B7BEC", fontWeight: 600 }}>업로드 중...</div>
+          ) : (
+            <div style={{ textAlign: "center", color: dragOver ? "#4B7BEC" : "#8A93A0" }}>
+              <div style={{ fontSize: 20, marginBottom: 2 }}>{dragOver ? "📥" : "📋"}</div>
+              <div style={{ fontSize: 12, fontWeight: 500 }}>
+                {dragOver ? "여기에 놓으세요" : "클릭하여 선택하거나"}
+              </div>
+              <div style={{ fontSize: 11, opacity: 0.8 }}>이미지 붙여넣기 (Ctrl+V)</div>
+            </div>
+          )}
         </div>
       </div>
       <input ref={ref} type="file" accept="image/*" multiple style={{ display: "none" }}
