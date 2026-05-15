@@ -279,35 +279,34 @@ function OrderCard({ order, onClick }) {
         </div>
       )}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{ fontWeight: 800, fontSize: 18, color: "var(--text-main)", letterSpacing: "-0.01em" }}>{order.customerName}</span>
-            <StatusBadge status={order.status} />
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 12 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <span style={{ fontWeight: 800, fontSize: 19, color: "var(--text-main)", letterSpacing: "-0.01em" }}>{order.customerName}</span>
+              <StatusBadge status={order.status} />
+            </div>
+            <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+              <span style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 600, background: "rgba(0,0,0,0.03)", padding: "3px 10px", borderRadius: 6, border: "1px solid rgba(0,0,0,0.03)" }}>{order.platform}</span>
+              {order.orderDate && <span style={{ fontSize: 13, color: "var(--text-muted)", fontWeight: 500 }}>{order.orderDate}</span>}
+            </div>
           </div>
           {order.notes && (
             <div style={{ 
-              fontSize: 12, 
-              color: "var(--text-secondary)", 
-              background: "#f1f5f9", 
-              padding: "5px 12px", 
-              borderRadius: 8,
-              maxWidth: "45%",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              fontWeight: 500,
-              border: "1px solid #e2e8f0"
+              fontSize: 14, 
+              color: "#1e293b", 
+              background: "#ffffff", 
+              padding: "8px 14px", 
+              borderRadius: 10,
+              maxWidth: "50%",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+              border: "1px solid #e2e8f0",
+              fontWeight: 600,
+              lineHeight: 1.4,
+              wordBreak: "break-all"
             }}>
               {order.notes}
             </div>
           )}
-        </div>
-        <p style={{ fontSize: 15, color: "var(--text-secondary)", margin: "0 0 12px 0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", lineHeight: 1.4 }}>{order.description || "주문 내용 없음"}</p>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-            <span style={{ fontSize: 13, color: "var(--text-muted)", fontWeight: 600, background: "#f8fafc", padding: "2px 8px", borderRadius: 4, border: "1px solid #f1f5f9" }}>{order.platform}</span>
-            {order.orderDate && <span style={{ fontSize: 13, color: "var(--text-muted)", fontWeight: 500 }}>{order.orderDate}</span>}
-          </div>
         </div>
       </div>
       {order.images?.length > 1 && (
