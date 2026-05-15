@@ -339,7 +339,7 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
         {order.notes && (
           <div style={{ 
             fontSize: 14, 
-            color: "#854d0e", 
+            color: "#334155", 
             background: "#fef9c3", 
             padding: "12px 16px", 
             borderRadius: "2px", 
