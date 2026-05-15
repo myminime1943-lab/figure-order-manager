@@ -356,22 +356,26 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
                   onQuickStatus(order.id, "배송완료");
                 }}
                 style={{
+                  position: "absolute",
+                  bottom: 16,
+                  right: 16,
                   background: "#10b981",
                   color: "#fff",
                   border: "none",
-                  padding: "8px 16px",
+                  padding: "10px 20px",
                   borderRadius: 4,
                   fontSize: 13,
-                  fontWeight: 700,
+                  fontWeight: 800,
                   cursor: "pointer",
-                  boxShadow: "0 2px 4px rgba(16, 185, 129, 0.2)",
+                  boxShadow: "0 4px 6px rgba(16, 185, 129, 0.3)",
                   display: "flex",
                   alignItems: "center",
-                  gap: 6
+                  gap: 8,
+                  zIndex: 5
                 }}
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                배송완료 전환
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                배송완료
               </button>
             )}
           </div>
