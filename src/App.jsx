@@ -677,7 +677,21 @@ export default function App() {
           <OrderCard key={order.id} order={order} 
             onClick={() => { setSelected(order); setModal("edit"); }} 
             onQuickStatus={updateStatusQuickly}
-            onQuickMemo={(ord) => { setQuickMemoOrder(ord); setMemoText(ord.notes || ""); }} />
+            onQuickMemo={async (ord) => {
+              const newMemo = window.prompt("메모를 입력하세요:", ord.notes || "");
+              if (newMemo !== null) {
+                try {
+                  const { error } = await supabase
+                    .from("orders")
+                    .update({ notes: newMemo })
+                    .eq("id", ord.id);
+                  if (error) throw error;
+                  fetchOrders();
+                } catch (err) {
+                  alert("메모 저장 실패");
+                }
+              }
+            }} />
         ))}
       </div>
 
