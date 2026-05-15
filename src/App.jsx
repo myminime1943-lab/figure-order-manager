@@ -339,15 +339,18 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
         {order.notes && (
           <div style={{ 
             fontSize: 14, 
-            color: "#1e293b", 
-            background: "#ffffff", 
-            padding: "8px 14px", 
-            borderRadius: 8, 
-            boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
-            border: "1px solid #e2e8f0",
-            fontWeight: 600,
-            lineHeight: 1.4,
-            wordBreak: "break-all"
+            color: "#854d0e", 
+            background: "#fef9c3", 
+            padding: "12px 16px", 
+            borderRadius: "2px", 
+            boxShadow: "2px 4px 8px rgba(0,0,0,0.1)",
+            borderLeft: "4px solid #facc15",
+            fontWeight: 700,
+            lineHeight: 1.5,
+            wordBreak: "break-all",
+            transform: "rotate(-1.5deg)",
+            position: "relative",
+            display: "inline-block"
           }}>
             {order.notes}
           </div>
