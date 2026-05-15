@@ -133,11 +133,11 @@ function ImageUploader({ images, onChange, initialFiles = [], onUploading }) {
       <div style={{ display: "flex", flexWrap: "wrap", gap: 14 }}>
         {images.map((img) => (
           <div key={img.id} style={{ position: "relative" }}>
-            <img src={img.src} alt={img.name} style={{ width: 110, height: 110, objectFit: "cover", borderRadius: 12, border: "1px solid #e2e8f0", boxShadow: "var(--shadow-sm)" }} />
+            <img src={img.src} alt={img.name} style={{ width: 110, height: 110, objectFit: "cover", borderRadius: 4, border: "1px solid #e2e8f0", boxShadow: "var(--shadow-sm)" }} />
             <button
               type="button"
               onClick={() => onChange(images.filter(i => i.id !== img.id))}
-              style={{ position: "absolute", top: -8, right: -8, width: 28, height: 28, borderRadius: "50%", background: "#ef4444", color: "#fff", border: "2px solid #fff", cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "var(--shadow-md)" }}>×</button>
+              style={{ position: "absolute", top: -8, right: -8, width: 28, height: 28, borderRadius: 4, background: "#ef4444", color: "#fff", border: "2px solid #fff", cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "var(--shadow-md)" }}>×</button>
           </div>
         ))}
       </div>
@@ -148,16 +148,16 @@ function ImageUploader({ images, onChange, initialFiles = [], onUploading }) {
 }
 
 const inputStyle = {
-  width: "100%", padding: "12px 16px", borderRadius: 12, border: "1px solid #e2e8f0",
+  width: "100%", padding: "12px 16px", borderRadius: 2, border: "1px solid #e2e8f0",
   fontSize: 14, outline: "none", boxSizing: "border-box", fontFamily: "inherit",
   background: "#fff", color: "#0f172a"
 };
 const btnPrimary = {
-  padding: "12px 24px", borderRadius: 10, border: "none", background: "#2563eb",
+  padding: "12px 24px", borderRadius: 2, border: "none", background: "#2563eb",
   color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer", transition: "all 0.2s"
 };
 const btnSecondary = {
-  padding: "12px 20px", borderRadius: 10, border: "1px solid #e2e8f0", background: "#fff",
+  padding: "12px 20px", borderRadius: 2, border: "1px solid #e2e8f0", background: "#fff",
   color: "#475569", fontSize: 14, fontWeight: 500, cursor: "pointer", transition: "all 0.2s"
 };
 
@@ -292,7 +292,7 @@ function OrderCard({ order, onClick }) {
                 fontWeight: 600, 
                 background: "#ffffff", 
                 padding: "2px 10px", 
-                borderRadius: 6, 
+                borderRadius: 2, 
                 border: "1px solid #e2e8f0",
                 boxShadow: "0 1px 2px rgba(0,0,0,0.03)"
               }}>
@@ -308,7 +308,7 @@ function OrderCard({ order, onClick }) {
               color: "#1e293b", 
               background: "#ffffff", 
               padding: "8px 14px", 
-              borderRadius: 10,
+              borderRadius: 4, 
               maxWidth: "50%",
               boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
               border: "1px solid #e2e8f0",
@@ -557,7 +557,7 @@ export default function App() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 32 }}>
         {Object.entries(counts).map(([s, c]) => (
-          <div key={s} style={{ background: STATUS[s].bg, borderRadius: 16, padding: "16px", textAlign: "center", border: `1px solid ${STATUS[s].color}15`, boxShadow: "0 1px 2px rgba(0,0,0,0.02)" }}>
+          <div key={s} style={{ background: STATUS[s].bg, borderRadius: 4, padding: "16px", textAlign: "center", border: `1px solid ${STATUS[s].color}15`, boxShadow: "0 1px 2px rgba(0,0,0,0.02)" }}>
             <div style={{ fontSize: 24, fontWeight: 800, color: STATUS[s].color }}>{c}</div>
             <div style={{ fontSize: 12, color: STATUS[s].color, fontWeight: 600, marginTop: 2 }}>{s}</div>
           </div>
@@ -568,7 +568,7 @@ export default function App() {
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           {["전체", ...Object.keys(STATUS)].map(s => (
             <button type="button" key={s} onClick={() => setFilterStatus(s)} style={{
-              padding: "8px 18px", borderRadius: 12, border: "1px solid",
+              padding: "8px 18px", borderRadius: 4, border: "1px solid",
               borderColor: filterStatus === s ? "#2563eb" : "#e2e8f0",
               background: filterStatus === s ? "#eff6ff" : "#fff",
               color: filterStatus === s ? "#2563eb" : "#64748b",
@@ -576,7 +576,7 @@ export default function App() {
             }}>{s} <span style={{ opacity: 0.6, marginLeft: 4 }}>{s === "전체" ? orders.length : counts[s]}</span></button>
           ))}
         </div>
-        <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 13, color: "#64748b", padding: "8px 12px", background: "#f8fafc", borderRadius: 10, border: "1px solid #e2e8f0" }}>
+        <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 13, color: "#64748b", padding: "8px 12px", background: "#f8fafc", borderRadius: 4, border: "1px solid #e2e8f0" }}>
           <input type="checkbox" checked={hideCompleted} onChange={e => setHideCompleted(e.target.checked)} style={{ width: 16, height: 16, cursor: "pointer" }} />
           <span>완료된 주문 숨기기</span>
         </label>
