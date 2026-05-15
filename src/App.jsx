@@ -261,7 +261,7 @@ function OrderForm({ onSave, onCancel, initialData = null, initialImages = [] })
   );
 }
 
-function OrderCard({ order, onClick, onQuickStatus }) {
+function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
   const thumb = order.images?.[0];
   const bg = PLATFORM_COLORS[order.platform] || "#fff";
   const isCompleted = order.status === "배송완료";
@@ -272,6 +272,32 @@ function OrderCard({ order, onClick, onQuickStatus }) {
       filter: isCompleted ? "grayscale(40%)" : "none",
       position: "relative"
     }}>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onQuickMemo(order);
+        }}
+        style={{
+          position: "absolute",
+          top: 12,
+          right: 12,
+          width: 32,
+          height: 32,
+          borderRadius: 4,
+          background: "rgba(255,255,255,0.8)",
+          border: "1px solid #e2e8f0",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: "pointer",
+          zIndex: 10,
+          color: "#64748b",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.05)"
+        }}
+        title="메모 작성/수정"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      </button>
       {thumb ? (
         <div style={{ position: "relative", width: 100, height: 100, flexShrink: 0 }}>
           <img src={thumb.src} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 4, border: "1px solid rgba(0,0,0,0.05)" }} />
@@ -305,7 +331,7 @@ function OrderCard({ order, onClick, onQuickStatus }) {
               <span style={{ fontSize: 13, color: "#94a3b8", fontWeight: 500 }}>{order.orderDate}</span>
             </div>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10 }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10, paddingRight: 40 }}>
             {order.notes && (
               <div style={{ 
                 fontSize: 14, 
@@ -446,6 +472,8 @@ export default function App() {
   const [orders, setOrders] = useState([]);
   const [modal, setModal] = useState(null);
   const [selected, setSelected] = useState(null);
+  const [quickMemoOrder, setQuickMemoOrder] = useState(null);
+  const [memoText, setMemoText] = useState("");
   const [filterStatus, setFilterStatus] = useState("전체");
   const [search, setSearch] = useState("");
   const [initialImages, setInitialImages] = useState([]);
@@ -646,9 +674,33 @@ export default function App() {
         ) : filtered.map(order => (
           <OrderCard key={order.id} order={order} 
             onClick={() => { setSelected(order); setModal("edit"); }} 
-            onQuickStatus={updateStatusQuickly} />
+            onQuickStatus={updateStatusQuickly}
+            onQuickMemo={(ord) => { setQuickMemoOrder(ord); setMemoText(ord.notes || ""); }} />
         ))}
       </div>
+
+      {quickMemoOrder && (
+        <div className="modal-backdrop" onClick={() => setQuickMemoOrder(null)}>
+          <div className="modal-box" style={{ maxWidth: 400, padding: 24 }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+              <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800 }}>퀵 메모 작성</h2>
+              <button onClick={() => setQuickMemoOrder(null)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 24, color: "#94a3b8" }}>&times;</button>
+            </div>
+            <textarea
+              autoFocus
+              value={memoText}
+              onChange={e => setMemoText(e.target.value)}
+              placeholder="메모를 입력하세요..."
+              rows={4}
+              style={{ ...inputStyle, marginBottom: 20, resize: "none" }}
+            />
+            <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+              <button onClick={() => setQuickMemoOrder(null)} style={btnSecondary}>취소</button>
+              <button onClick={handleQuickMemoSave} style={btnPrimary}>메모 저장</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {modal === "add" && (
         <Modal title="새 주문 추가" onClose={() => { setModal(null); setInitialImages([]); }}>
