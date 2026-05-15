@@ -347,40 +347,38 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
             </button>
           </div>
         </div>
-            {order.status === "완성" && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onQuickStatus(order.id, "배송완료");
-                }}
-                style={{
-                  position: "absolute",
-                  bottom: 16,
-                  right: 16,
-                  background: "#10b981",
-                  color: "#fff",
-                  border: "none",
-                  padding: "10px 20px",
-                  borderRadius: 4,
-                  fontSize: 13,
-                  fontWeight: 800,
-                  cursor: "pointer",
-                  boxShadow: "0 4px 6px rgba(16, 185, 129, 0.3)",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  zIndex: 5
-                }}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                배송완료
-              </button>
-            )}
-          </div>
-        </div>
       </div>
+      {order.status === "완성" && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onQuickStatus(order.id, "배송완료");
+          }}
+          style={{
+            position: "absolute",
+            bottom: 16,
+            right: 16,
+            background: "#10b981",
+            color: "#fff",
+            border: "none",
+            padding: "10px 20px",
+            borderRadius: 4,
+            fontSize: 13,
+            fontWeight: 800,
+            cursor: "pointer",
+            boxShadow: "0 4px 6px rgba(16, 185, 129, 0.3)",
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            zIndex: 5
+          }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          배송완료
+        </button>
+      )}
       {order.images?.length > 1 && (
-        <span style={{ fontSize: 11, color: "#A0ADB4", flexShrink: 0 }}>+{order.images.length - 1}</span>
+        <span style={{ position: "absolute", bottom: 12, left: 112, fontSize: 11, color: "#94a3b8", fontWeight: 600 }}>+{order.images.length - 1}</span>
       )}
     </div>
   );
