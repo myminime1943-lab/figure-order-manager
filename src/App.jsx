@@ -675,7 +675,7 @@ export default function App() {
           </div>
         ) : filtered.map(order => (
           <OrderCard key={order.id} order={order} 
-            onClick={() => { setSelected(order); setModal("edit"); }} 
+            onClick={() => { setSelected(order); setModal("detail"); }} 
             onQuickStatus={updateStatusQuickly}
             onQuickMemo={async (ord) => {
               const newMemo = window.prompt("메모를 입력하세요:", ord.notes || "");
