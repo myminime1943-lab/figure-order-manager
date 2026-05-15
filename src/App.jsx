@@ -335,7 +335,7 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
       </button>
 
-      <div style={{ position: "absolute", bottom: 16, right: 16, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10, maxWidth: "60%" }}>
+      <div style={{ position: "absolute", bottom: 16, right: 16, display: "flex", flexDirection: "row", alignItems: "flex-end", gap: 12, maxWidth: "70%" }}>
         {order.notes && (
           <div style={{ 
             fontSize: 14, 
@@ -370,7 +370,8 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
               boxShadow: "0 4px 6px rgba(16, 185, 129, 0.3)",
               display: "flex",
               alignItems: "center",
-              gap: 8
+              gap: 8,
+              whiteSpace: "nowrap"
             }}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
