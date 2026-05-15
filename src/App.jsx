@@ -281,30 +281,34 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
         </div>
       )}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <span style={{ fontWeight: 900, fontSize: 20, color: "#0f172a", letterSpacing: "-0.02em" }}>{order.customerName}</span>
-              <StatusBadge status={order.status} />
-            </div>
-            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <span style={{ 
-                fontSize: 12, 
-                color: "#64748b", 
-                fontWeight: 600, 
-                background: "#ffffff", 
-                padding: "2px 10px", 
-                borderRadius: 6, 
-                border: "1px solid #e2e8f0",
-                boxShadow: "0 1px 2px rgba(0,0,0,0.03)"
-              }}>
-                {order.platform}
-              </span>
-              <span style={{ width: 1, height: 10, background: "#e2e8f0" }}></span>
-              <span style={{ fontSize: 13, color: "#94a3b8", fontWeight: 500 }}>{order.orderDate}</span>
-            </div>
-          </div>
+      <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: "#0f172a" }}>{order.customerName}</h3>
+          <span style={{ 
+            fontSize: 12, 
+            padding: "2px 10px", 
+            borderRadius: 6, 
+            background: STATUS[order.status].bg, 
+            color: STATUS[order.status].color,
+            border: `1px solid ${STATUS[order.status].color}20`,
+            fontWeight: 700 
+          }}>{order.status}</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ 
+            fontSize: 12, 
+            color: "#64748b", 
+            fontWeight: 600, 
+            background: "#ffffff", 
+            padding: "2px 10px", 
+            borderRadius: 6, 
+            border: "1px solid #e2e8f0",
+            boxShadow: "0 1px 2px rgba(0,0,0,0.03)"
+          }}>
+            {order.platform}
+          </span>
+          <span style={{ width: 1, height: 10, background: "#e2e8f0" }}></span>
+          <span style={{ fontSize: 13, color: "#94a3b8", fontWeight: 500 }}>{order.orderDate}</span>
         </div>
       </div>
 
