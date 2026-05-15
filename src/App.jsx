@@ -279,15 +279,27 @@ function OrderCard({ order, onClick }) {
         </div>
       )}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 12 }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontWeight: 800, fontSize: 19, color: "var(--text-main)", letterSpacing: "-0.01em" }}>{order.customerName}</span>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span style={{ fontWeight: 900, fontSize: 20, color: "#0f172a", letterSpacing: "-0.02em" }}>{order.customerName}</span>
               <StatusBadge status={order.status} />
             </div>
-            <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-              <span style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 600, background: "rgba(0,0,0,0.03)", padding: "3px 10px", borderRadius: 6, border: "1px solid rgba(0,0,0,0.03)" }}>{order.platform}</span>
-              {order.orderDate && <span style={{ fontSize: 13, color: "var(--text-muted)", fontWeight: 500 }}>{order.orderDate}</span>}
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <span style={{ 
+                fontSize: 12, 
+                color: "#64748b", 
+                fontWeight: 600, 
+                background: "#ffffff", 
+                padding: "2px 10px", 
+                borderRadius: 6, 
+                border: "1px solid #e2e8f0",
+                boxShadow: "0 1px 2px rgba(0,0,0,0.03)"
+              }}>
+                {order.platform}
+              </span>
+              <span style={{ width: 1, height: 10, background: "#e2e8f0" }}></span>
+              <span style={{ fontSize: 13, color: "#94a3b8", fontWeight: 500 }}>{order.orderDate}</span>
             </div>
           </div>
           {order.notes && (
