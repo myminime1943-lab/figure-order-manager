@@ -272,32 +272,6 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
       filter: isCompleted ? "grayscale(40%)" : "none",
       position: "relative"
     }}>
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onQuickMemo(order);
-        }}
-        style={{
-          position: "absolute",
-          top: 12,
-          right: 12,
-          width: 32,
-          height: 32,
-          borderRadius: 4,
-          background: "rgba(255,255,255,0.8)",
-          border: "1px solid #e2e8f0",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          cursor: "pointer",
-          zIndex: 10,
-          color: "#64748b",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.05)"
-        }}
-        title="메모 작성/수정"
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-      </button>
       {thumb ? (
         <div style={{ position: "relative", width: 100, height: 100, flexShrink: 0 }}>
           <img src={thumb.src} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 4, border: "1px solid rgba(0,0,0,0.05)" }} />
@@ -331,7 +305,7 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
               <span style={{ fontSize: 13, color: "#94a3b8", fontWeight: 500 }}>{order.orderDate}</span>
             </div>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10, paddingRight: 40 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             {order.notes && (
               <div style={{ 
                 fontSize: 14, 
@@ -339,7 +313,7 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
                 background: "#ffffff", 
                 padding: "8px 14px", 
                 borderRadius: 4, 
-                maxWidth: "100%",
+                maxWidth: "240px",
                 boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
                 border: "1px solid #e2e8f0",
                 fontWeight: 600,
@@ -349,6 +323,30 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
                 {order.notes}
               </div>
             )}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onQuickMemo(order);
+              }}
+              style={{
+                background: "none",
+                border: "none",
+                padding: "8px",
+                cursor: "pointer",
+                color: "#94a3b8",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "color 0.2s"
+              }}
+              onMouseEnter={e => e.currentTarget.style.color = "#2563eb"}
+              onMouseLeave={e => e.currentTarget.style.color = "#94a3b8"}
+              title="메모 작성/수정"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            </button>
+          </div>
+        </div>
             {order.status === "완성" && (
               <button
                 onClick={(e) => {
