@@ -261,7 +261,7 @@ function OrderForm({ onSave, onCancel, initialData = null, initialImages = [] })
   );
 }
 
-function OrderCard({ order, onClick }) {
+function OrderCard({ order, onClick, onQuickStatus }) {
   const thumb = order.images?.[0];
   const bg = PLATFORM_COLORS[order.platform] || "#fff";
   const isCompleted = order.status === "배송완료";
@@ -269,13 +269,16 @@ function OrderCard({ order, onClick }) {
     <div onClick={onClick} className="order-card" style={{ 
       background: bg,
       opacity: isCompleted ? 0.6 : 1,
-      filter: isCompleted ? "grayscale(40%)" : "none"
+      filter: isCompleted ? "grayscale(40%)" : "none",
+      position: "relative"
     }}>
       {thumb ? (
-        <img src={thumb.src} alt="" style={{ width: 90, height: 90, objectFit: "cover", borderRadius: 12, flexShrink: 0, border: "1px solid rgba(0,0,0,0.05)" }} />
+        <div style={{ position: "relative", width: 100, height: 100, flexShrink: 0 }}>
+          <img src={thumb.src} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 4, border: "1px solid rgba(0,0,0,0.05)" }} />
+        </div>
       ) : (
-        <div style={{ width: 90, height: 90, borderRadius: 12, background: "#f1f5f9", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#94a3b8" }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <div style={{ width: 100, height: 100, background: "#f1f5f9", borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center", color: "#cbd5e1", flexShrink: 0 }}>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
         </div>
       )}
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -302,23 +305,50 @@ function OrderCard({ order, onClick }) {
               <span style={{ fontSize: 13, color: "#94a3b8", fontWeight: 500 }}>{order.orderDate}</span>
             </div>
           </div>
-          {order.notes && (
-            <div style={{ 
-              fontSize: 14, 
-              color: "#1e293b", 
-              background: "#ffffff", 
-              padding: "8px 14px", 
-              borderRadius: 4, 
-              maxWidth: "50%",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
-              border: "1px solid #e2e8f0",
-              fontWeight: 600,
-              lineHeight: 1.4,
-              wordBreak: "break-all"
-            }}>
-              {order.notes}
-            </div>
-          )}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10 }}>
+            {order.notes && (
+              <div style={{ 
+                fontSize: 14, 
+                color: "#1e293b", 
+                background: "#ffffff", 
+                padding: "8px 14px", 
+                borderRadius: 4, 
+                maxWidth: "100%",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+                border: "1px solid #e2e8f0",
+                fontWeight: 600,
+                lineHeight: 1.4,
+                wordBreak: "break-all"
+              }}>
+                {order.notes}
+              </div>
+            )}
+            {order.status === "완성" && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onQuickStatus(order.id, "배송완료");
+                }}
+                style={{
+                  background: "#10b981",
+                  color: "#fff",
+                  border: "none",
+                  padding: "8px 16px",
+                  borderRadius: 4,
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  boxShadow: "0 2px 4px rgba(16, 185, 129, 0.2)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                배송완료 전환
+              </button>
+            )}
+          </div>
         </div>
       </div>
       {order.images?.length > 1 && (
@@ -507,6 +537,20 @@ export default function App() {
     }
   };
 
+  const updateStatusQuickly = async (id, newStatus) => {
+    try {
+      const { error } = await supabase
+        .from("orders")
+        .update({ status: newStatus })
+        .eq("id", id);
+      if (error) throw error;
+      fetchOrders();
+    } catch (err) {
+      console.error(err);
+      alert("상태 변경에 실패했습니다.");
+    }
+  };
+
   const changeStatus = async (status) => {
     const { error } = await supabase.from('orders').update({ status }).eq('id', selected.id);
     if (!error) {
@@ -600,7 +644,9 @@ export default function App() {
             </p>
           </div>
         ) : filtered.map(order => (
-          <OrderCard key={order.id} order={order} onClick={() => { setSelected(order); setModal("detail"); }} />
+          <OrderCard key={order.id} order={order} 
+            onClick={() => { setSelected(order); setModal("edit"); }} 
+            onQuickStatus={updateStatusQuickly} />
         ))}
       </div>
 
