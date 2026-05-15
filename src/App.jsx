@@ -305,78 +305,79 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
               <span style={{ fontSize: 13, color: "#94a3b8", fontWeight: 500 }}>{order.orderDate}</span>
             </div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            {order.notes && (
-              <div style={{ 
-                fontSize: 14, 
-                color: "#1e293b", 
-                background: "#ffffff", 
-                padding: "8px 14px", 
-                borderRadius: 4, 
-                maxWidth: "240px",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
-                border: "1px solid #e2e8f0",
-                fontWeight: 600,
-                lineHeight: 1.4,
-                wordBreak: "break-all"
-              }}>
-                {order.notes}
-              </div>
-            )}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onQuickMemo(order);
-              }}
-              style={{
-                background: "none",
-                border: "none",
-                padding: "8px",
-                cursor: "pointer",
-                color: "#94a3b8",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                transition: "color 0.2s"
-              }}
-              onMouseEnter={e => e.currentTarget.style.color = "#2563eb"}
-              onMouseLeave={e => e.currentTarget.style.color = "#94a3b8"}
-              title="메모 작성/수정"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-            </button>
-          </div>
         </div>
       </div>
-      {order.status === "완성" && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onQuickStatus(order.id, "배송완료");
-          }}
-          style={{
-            position: "absolute",
-            bottom: 16,
-            right: 16,
-            background: "#10b981",
-            color: "#fff",
-            border: "none",
-            padding: "10px 20px",
-            borderRadius: 4,
-            fontSize: 13,
-            fontWeight: 800,
-            cursor: "pointer",
-            boxShadow: "0 4px 6px rgba(16, 185, 129, 0.3)",
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            zIndex: 5
-          }}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          배송완료
-        </button>
-      )}
+
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onQuickMemo(order);
+        }}
+        style={{
+          position: "absolute",
+          top: 12,
+          right: 12,
+          background: "none",
+          border: "none",
+          padding: "8px",
+          cursor: "pointer",
+          color: "#cbd5e1",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "color 0.2s",
+          zIndex: 10
+        }}
+        onMouseEnter={e => e.currentTarget.style.color = "#2563eb"}
+        onMouseLeave={e => e.currentTarget.style.color = "#cbd5e1"}
+        title="메모 작성/수정"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      </button>
+
+      <div style={{ position: "absolute", bottom: 16, right: 16, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10, maxWidth: "60%" }}>
+        {order.notes && (
+          <div style={{ 
+            fontSize: 14, 
+            color: "#1e293b", 
+            background: "#ffffff", 
+            padding: "8px 14px", 
+            borderRadius: 4, 
+            boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+            border: "1px solid #e2e8f0",
+            fontWeight: 600,
+            lineHeight: 1.4,
+            wordBreak: "break-all"
+          }}>
+            {order.notes}
+          </div>
+        )}
+        {order.status === "완성" && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onQuickStatus(order.id, "배송완료");
+            }}
+            style={{
+              background: "#10b981",
+              color: "#fff",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: 4,
+              fontSize: 13,
+              fontWeight: 800,
+              cursor: "pointer",
+              boxShadow: "0 4px 6px rgba(16, 185, 129, 0.3)",
+              display: "flex",
+              alignItems: "center",
+              gap: 8
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            배송완료
+          </button>
+        )}
+      </div>
       {order.images?.length > 1 && (
         <span style={{ position: "absolute", bottom: 12, left: 112, fontSize: 11, color: "#94a3b8", fontWeight: 600 }}>+{order.images.length - 1}</span>
       )}
