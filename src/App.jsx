@@ -682,26 +682,28 @@ export default function App() {
       </div>
 
       {quickMemoOrder && (
-        <div className="modal-backdrop" onClick={() => setQuickMemoOrder(null)}>
-          <div className="modal-box" style={{ maxWidth: 400, padding: 24 }} onClick={e => e.stopPropagation()}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-              <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800 }}>퀵 메모 작성</h2>
-              <button onClick={() => setQuickMemoOrder(null)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 24, color: "#94a3b8" }}>&times;</button>
-            </div>
+        <Modal title="퀵 메모 작성" onClose={() => setQuickMemoOrder(null)}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <textarea
               autoFocus
               value={memoText}
               onChange={e => setMemoText(e.target.value)}
-              placeholder="메모를 입력하세요..."
-              rows={4}
-              style={{ ...inputStyle, marginBottom: 20, resize: "none" }}
+              placeholder="여기에 메모를 입력하세요..."
+              rows={5}
+              style={{ ...inputStyle, resize: "none", minHeight: 120 }}
+              onKeyDown={e => {
+                if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                  handleQuickMemoSave();
+                }
+              }}
             />
-            <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+            <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>💡 Ctrl + Enter를 누르면 바로 저장됩니다.</p>
+            <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 8 }}>
               <button onClick={() => setQuickMemoOrder(null)} style={btnSecondary}>취소</button>
               <button onClick={handleQuickMemoSave} style={btnPrimary}>메모 저장</button>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
 
       {modal === "add" && (
