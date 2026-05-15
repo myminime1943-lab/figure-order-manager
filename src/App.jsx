@@ -3,9 +3,9 @@ import "./App.css";
 import { supabase } from "./supabase";
 
 const STATUS = {
-  접수: { label: "접수", color: "#2563eb", bg: "#eff6ff" },
-  제작중: { label: "제작중", color: "#d97706", bg: "#fffbeb" },
-  완성: { label: "완성", color: "#059669", bg: "#ecfdf5" },
+  접수: { label: "접수", color: "#475569", bg: "#f8fafc" },
+  제작중: { label: "제작중", color: "#475569", bg: "#f8fafc" },
+  완성: { label: "완성", color: "#475569", bg: "#f8fafc" },
   배송완료: { label: "배송완료", color: "#475569", bg: "#f8fafc" },
 };
 
