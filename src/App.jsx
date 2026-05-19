@@ -504,9 +504,9 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
             fontSize: 12,
             padding: "2px 10px",
             borderRadius: 6,
-            background: STATUS[order.status].bg,
-            color: STATUS[order.status].color,
-            border: `1px solid ${STATUS[order.status].color}20`,
+            background: "#f1f5f9",
+            color: "#475569",
+            border: "1px solid #e2e8f0",
             fontWeight: 700
           }}>{order.status}</span>
         </div>
