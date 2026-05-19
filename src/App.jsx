@@ -504,10 +504,11 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
             fontSize: 12,
             padding: "2px 10px",
             borderRadius: 6,
-            background: "#f1f5f9",
-            color: "#475569",
+            background: "#ffffff",
+            color: "#64748b",
             border: "1px solid #e2e8f0",
-            fontWeight: 700
+            fontWeight: 600,
+            boxShadow: "0 1px 2px rgba(0,0,0,0.03)"
           }}>{order.status}</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
