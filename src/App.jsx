@@ -3,10 +3,10 @@ import "./App.css";
 import { supabase } from "./supabase";
 
 const STATUS = {
-  접수: { label: "접수", color: "#475569", bg: "#f8fafc" },
-  제작중: { label: "제작중", color: "#475569", bg: "#f8fafc" },
-  완성: { label: "완성", color: "#475569", bg: "#f8fafc" },
-  배송완료: { label: "배송완료", color: "#475569", bg: "#f8fafc" },
+  접수: { label: "접수", color: "#2563eb", bg: "#eff6ff" },
+  제작중: { label: "제작중", color: "#d97706", bg: "#fffbeb" },
+  완성: { label: "완성", color: "#059669", bg: "#ecfdf5" },
+  배송완료: { label: "배송완료", color: "#64748b", bg: "#f1f5f9" },
 };
 
 const PLATFORMS = ["스마트스토어", "송도점", "경북상주점", "서초점", "쿠팡", "카카오 비즈니스센터", "직접방문", "기타"];
@@ -854,35 +854,43 @@ export default function App() {
           <h1 style={{ margin: 0, fontSize: 30, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.025em" }}>주문 관리 시스템</h1>
           <p style={{ margin: "2px 0 0", fontSize: 16, color: "#79BCFA", fontWeight: 700, letterSpacing: "-0.01em" }}>마이미니미 안산점</p>
         </div>
-        <div style={{ display: "flex", gap: 10 }}>
-          <button type="button" onClick={() => setComplaintModal("list")} style={{
-            ...btnSecondary,
-            display: "flex", alignItems: "center", gap: 8,
-            borderColor: "#fecaca", color: "#ef4444",
-            position: "relative"
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <div style={{ display: "flex", gap: 6 }}>
+            <button type="button" onClick={() => setComplaintModal("list")} style={{
+              padding: "8px 14px", borderRadius: 8, border: "1px solid #fecaca",
+              background: "#fff", color: "#ef4444", fontSize: 13, fontWeight: 500,
+              cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
+              position: "relative"
+            }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              고객 불만
+              {complaints.length > 0 && (
+                <span style={{
+                  position: "absolute", top: -6, right: -6,
+                  background: "#ef4444", color: "#fff",
+                  fontSize: 10, fontWeight: 800,
+                  width: 18, height: 18, borderRadius: 9,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  border: "2px solid #fff"
+                }}>{complaints.length}</span>
+              )}
+            </button>
+            <a href="/마이미니미_불만유형현황.xlsx" download style={{
+              padding: "8px 14px", borderRadius: 8, border: "1px solid #e2e8f0",
+              background: "#fff", color: "#64748b", fontSize: 13, fontWeight: 500,
+              cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
+              textDecoration: "none"
+            }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              템플릿
+            </a>
+          </div>
+          <button type="button" onClick={() => setModal("add")} style={{
+            padding: "12px 24px", borderRadius: 8, border: "none",
+            background: "#2563eb", color: "#fff", fontSize: 15, fontWeight: 700,
+            cursor: "pointer", display: "flex", alignItems: "center", gap: 8,
+            boxShadow: "0 4px 12px rgba(37,99,235,0.3)"
           }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            고객 불만 접수
-            {complaints.length > 0 && (
-              <span style={{
-                position: "absolute", top: -6, right: -6,
-                background: "#ef4444", color: "#fff",
-                fontSize: 10, fontWeight: 800,
-                width: 18, height: 18, borderRadius: 9,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                border: "2px solid #fff"
-              }}>{complaints.length}</span>
-            )}
-          </button>
-          <a href="/마이미니미_불만유형현황.xlsx" download style={{
-            ...btnSecondary,
-            display: "flex", alignItems: "center", gap: 8,
-            textDecoration: "none", color: "#10b981", borderColor: "#10b981"
-          }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-            불만현황 템플릿
-          </a>
-          <button type="button" onClick={() => setModal("add")} style={{...btnPrimary, display: "flex", alignItems: "center", gap: 8}}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             새 주문 추가
           </button>
