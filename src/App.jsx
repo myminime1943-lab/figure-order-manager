@@ -854,7 +854,7 @@ export default function App() {
           <h1 style={{ margin: 0, fontSize: 30, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.025em" }}>주문 관리 시스템</h1>
           <p style={{ margin: "2px 0 0", fontSize: 16, color: "#79BCFA", fontWeight: 700, letterSpacing: "-0.01em" }}>마이미니미 안산점</p>
         </div>
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
           <div style={{ display: "flex", gap: 6 }}>
             <button type="button" onClick={() => setComplaintModal("list")} style={{
               padding: "8px 14px", borderRadius: 8, border: "1px solid #fecaca",
@@ -885,6 +885,7 @@ export default function App() {
               템플릿
             </a>
           </div>
+          <div style={{ width: 1, height: 28, background: "#e2e8f0" }} />
           <button type="button" onClick={() => setModal("add")} style={{
             padding: "12px 24px", borderRadius: 8, border: "none",
             background: "#2563eb", color: "#fff", fontSize: 15, fontWeight: 700,
