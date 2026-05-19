@@ -21,14 +21,27 @@ const PLATFORM_COLORS = {
   "기타": "#ffffff"
 };
 
+const CHANNELS = ["전화", "게시판", "이메일", "방문"];
+const PROBLEM_CATEGORIES = ["제품 결함", "서비스 지연", "직원 태도", "배송 문제", "기타"];
+const RESOLUTION_ACTIONS = ["교환", "환불", "수리", "보상", "담당자 교육"];
+
 function generateId() {
   return "ord_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7);
+}
+
+function generateComplaintId() {
+  return "cmp_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7);
 }
 
 function formatDate(dateStr) {
   if (!dateStr) return "";
   const d = new Date(dateStr);
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function todayKorean() {
+  const d = new Date();
+  return `${d.getFullYear()}년 ${String(d.getMonth() + 1).padStart(2, "0")}월 ${String(d.getDate()).padStart(2, "0")}일`;
 }
 
 function StatusBadge({ status }) {
@@ -107,7 +120,7 @@ function ImageUploader({ images, onChange, initialFiles = [], onUploading }) {
 
   return (
     <div onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
-      <div 
+      <div
         onClick={() => ref.current.click()}
         style={{
           ...inputStyle,
@@ -160,6 +173,207 @@ const btnSecondary = {
   padding: "12px 20px", borderRadius: 8, border: "1px solid #e2e8f0", background: "#fff",
   color: "#475569", fontSize: 14, fontWeight: 500, cursor: "pointer", transition: "all 0.2s"
 };
+
+function CheckboxGroup({ label, options, selected, onChange }) {
+  const toggle = (opt) => {
+    const next = selected.includes(opt) ? selected.filter(o => o !== opt) : [...selected, opt];
+    onChange(next);
+  };
+  return (
+    <div>
+      <label style={{ fontSize: 12, color: "#6B7684", display: "block", marginBottom: 6 }}>{label}</label>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+        {options.map(opt => {
+          const checked = selected.includes(opt);
+          return (
+            <label key={opt} style={{
+              display: "flex", alignItems: "center", gap: 5,
+              padding: "6px 14px", borderRadius: 20,
+              border: `1px solid ${checked ? "#2563eb" : "#e2e8f0"}`,
+              background: checked ? "#eff6ff" : "#fff",
+              color: checked ? "#2563eb" : "#64748b",
+              cursor: "pointer", fontSize: 13, fontWeight: checked ? 600 : 400,
+              transition: "all 0.15s", userSelect: "none"
+            }}>
+              <input type="checkbox" checked={checked} onChange={() => toggle(opt)} style={{ display: "none" }} />
+              {checked && (
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              )}
+              {opt}
+            </label>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function ComplaintForm({ onSave, onCancel }) {
+  const [form, setForm] = useState({
+    receivedDate: todayKorean(),
+    channels: [],
+    customerName: "",
+    contact: "",
+    purchaseDate: "",
+    complaintContent: "",
+    problemCategories: [],
+    investigation: "",
+    resolutionActions: [],
+    resolutionDate: "",
+    customerFeedback: "",
+    preventionMeasure: "",
+    createdAt: new Date().toISOString(),
+  });
+
+  const set = (key, val) => setForm(f => ({ ...f, [key]: val }));
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+      {/* 1. 접수 정보 */}
+      <div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: "#ef4444", marginBottom: 12, paddingBottom: 8, borderBottom: "2px solid #fee2e2", display: "flex", alignItems: "center", gap: 6 }}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          1. 접수 정보
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div>
+            <label style={{ fontSize: 12, color: "#6B7684", display: "block", marginBottom: 4 }}>접수 일시</label>
+            <input value={form.receivedDate} onChange={e => set("receivedDate", e.target.value)} style={inputStyle} />
+          </div>
+          <CheckboxGroup label="접수 채널" options={CHANNELS} selected={form.channels} onChange={v => set("channels", v)} />
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+            <div>
+              <label style={{ fontSize: 12, color: "#6B7684", display: "block", marginBottom: 4 }}>고객 성명 *</label>
+              <input value={form.customerName} onChange={e => set("customerName", e.target.value)} placeholder="홍길동" style={inputStyle} />
+            </div>
+            <div>
+              <label style={{ fontSize: 12, color: "#6B7684", display: "block", marginBottom: 4 }}>연락처</label>
+              <input value={form.contact} onChange={e => set("contact", e.target.value)} placeholder="010-0000-0000" style={inputStyle} />
+            </div>
+            <div>
+              <label style={{ fontSize: 12, color: "#6B7684", display: "block", marginBottom: 4 }}>구매 일자</label>
+              <input value={form.purchaseDate} onChange={e => set("purchaseDate", e.target.value)} placeholder="05/01" style={inputStyle} />
+            </div>
+          </div>
+          <div>
+            <label style={{ fontSize: 12, color: "#6B7684", display: "block", marginBottom: 4 }}>불만 내용</label>
+            <textarea value={form.complaintContent} onChange={e => set("complaintContent", e.target.value)}
+              placeholder="고객이 접수한 불만 내용을 상세하게 기록..." rows={3}
+              style={{ ...inputStyle, resize: "vertical" }} />
+          </div>
+        </div>
+      </div>
+
+      {/* 2. 내부 처리 및 해결 */}
+      <div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: "#f59e0b", marginBottom: 12, paddingBottom: 8, borderBottom: "2px solid #fef3c7", display: "flex", alignItems: "center", gap: 6 }}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          2. 내부 처리 및 해결
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <CheckboxGroup label="문제 분류" options={PROBLEM_CATEGORIES} selected={form.problemCategories} onChange={v => set("problemCategories", v)} />
+          <div>
+            <label style={{ fontSize: 12, color: "#6B7684", display: "block", marginBottom: 4 }}>사실 확인 (Investigation)</label>
+            <textarea value={form.investigation} onChange={e => set("investigation", e.target.value)}
+              placeholder="관련 부서 확인 결과 및 객관적 사실관계..." rows={3}
+              style={{ ...inputStyle, resize: "vertical" }} />
+          </div>
+          <CheckboxGroup label="해결 조치 내역" options={RESOLUTION_ACTIONS} selected={form.resolutionActions} onChange={v => set("resolutionActions", v)} />
+          <div>
+            <label style={{ fontSize: 12, color: "#6B7684", display: "block", marginBottom: 4 }}>처리 결과 전달 일시</label>
+            <input value={form.resolutionDate} onChange={e => set("resolutionDate", e.target.value)} placeholder="2026년 05월 25일" style={inputStyle} />
+          </div>
+        </div>
+      </div>
+
+      {/* 3. 사후 관리 및 예방 */}
+      <div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: "#10b981", marginBottom: 12, paddingBottom: 8, borderBottom: "2px solid #d1fae5", display: "flex", alignItems: "center", gap: 6 }}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          3. 사후 관리 및 예방
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div>
+            <label style={{ fontSize: 12, color: "#6B7684", display: "block", marginBottom: 4 }}>고객 피드백</label>
+            <textarea value={form.customerFeedback} onChange={e => set("customerFeedback", e.target.value)}
+              placeholder="처리된 서비스에 대한 고객 만족도 확인 내용..." rows={2}
+              style={{ ...inputStyle, resize: "vertical" }} />
+          </div>
+          <div>
+            <label style={{ fontSize: 12, color: "#6B7684", display: "block", marginBottom: 4 }}>재발 방지 대책</label>
+            <textarea value={form.preventionMeasure} onChange={e => set("preventionMeasure", e.target.value)}
+              placeholder="동일한 문제 발생을 막기 위한 프로세스 개선점..." rows={2}
+              style={{ ...inputStyle, resize: "vertical" }} />
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+        <button type="button" onClick={onCancel} style={btnSecondary}>취소</button>
+        <button type="button" onClick={() => {
+          if (!form.customerName.trim()) { alert("고객 성명은 필수입니다."); return; }
+          onSave(form);
+        }} style={{ ...btnPrimary, background: "#ef4444" }}>
+          불만 접수 저장
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ComplaintCard({ complaint, onDelete }) {
+  const resolved = !!complaint.resolutionDate;
+  return (
+    <div style={{
+      background: resolved ? "#f8fafc" : "#fff5f5",
+      border: `1px solid ${resolved ? "#e2e8f0" : "#fecaca"}`,
+      borderRadius: 10,
+      padding: "16px 18px",
+      display: "flex",
+      flexDirection: "column",
+      gap: 10,
+      opacity: resolved ? 0.75 : 1,
+    }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ fontSize: 16, fontWeight: 800, color: "#0f172a" }}>{complaint.customerName}</span>
+          <span style={{
+            fontSize: 11, fontWeight: 700, padding: "2px 10px", borderRadius: 20,
+            background: resolved ? "#d1fae5" : "#fee2e2",
+            color: resolved ? "#059669" : "#ef4444",
+          }}>
+            {resolved ? "처리완료" : "처리중"}
+          </span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: 12, color: "#94a3b8" }}>{complaint.receivedDate}</span>
+          <button type="button" onClick={() => onDelete(complaint.id)}
+            style={{ background: "none", border: "none", cursor: "pointer", color: "#cbd5e1", padding: "4px", display: "flex", alignItems: "center" }}
+            onMouseEnter={e => e.currentTarget.style.color = "#ef4444"}
+            onMouseLeave={e => e.currentTarget.style.color = "#cbd5e1"}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+        </div>
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+        {complaint.channels?.map(c => (
+          <span key={c} style={{ fontSize: 11, padding: "2px 8px", borderRadius: 10, background: "#eff6ff", color: "#2563eb", fontWeight: 600 }}>{c}</span>
+        ))}
+        {complaint.problemCategories?.map(p => (
+          <span key={p} style={{ fontSize: 11, padding: "2px 8px", borderRadius: 10, background: "#fef3c7", color: "#d97706", fontWeight: 600 }}>{p}</span>
+        ))}
+        {complaint.resolutionActions?.map(r => (
+          <span key={r} style={{ fontSize: 11, padding: "2px 8px", borderRadius: 10, background: "#d1fae5", color: "#059669", fontWeight: 600 }}>{r}</span>
+        ))}
+      </div>
+      {complaint.complaintContent && (
+        <p style={{ margin: 0, fontSize: 13, color: "#475569", lineHeight: 1.5, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
+          {complaint.complaintContent}
+        </p>
+      )}
+    </div>
+  );
+}
 
 function OrderForm({ onSave, onCancel, initialData = null, initialImages = [] }) {
   const [form, setForm] = useState(initialData || {
@@ -232,9 +446,9 @@ function OrderForm({ onSave, onCancel, initialData = null, initialImages = [] })
       </div>
       <div>
         <label style={{ fontSize: 12, color: "#6B7684", display: "block", marginBottom: 4 }}>참고 이미지</label>
-        <ImageUploader 
-          images={form.images || []} 
-          onChange={imgs => set("images", typeof imgs === "function" ? imgs(form.images) : imgs)} 
+        <ImageUploader
+          images={form.images || []}
+          onChange={imgs => set("images", typeof imgs === "function" ? imgs(form.images) : imgs)}
           initialFiles={initialImages}
           onUploading={setIsUploading}
         />
@@ -266,7 +480,7 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
   const bg = PLATFORM_COLORS[order.platform] || "#fff";
   const isCompleted = order.status === "배송완료";
   return (
-    <div onClick={onClick} className="order-card" style={{ 
+    <div onClick={onClick} className="order-card" style={{
       background: bg,
       opacity: isCompleted ? 0.6 : 1,
       filter: isCompleted ? "grayscale(40%)" : "none",
@@ -284,24 +498,24 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
       <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 12 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: "#0f172a" }}>{order.customerName}</h3>
-          <span style={{ 
-            fontSize: 12, 
-            padding: "2px 10px", 
-            borderRadius: 6, 
-            background: STATUS[order.status].bg, 
+          <span style={{
+            fontSize: 12,
+            padding: "2px 10px",
+            borderRadius: 6,
+            background: STATUS[order.status].bg,
             color: STATUS[order.status].color,
             border: `1px solid ${STATUS[order.status].color}20`,
-            fontWeight: 700 
+            fontWeight: 700
           }}>{order.status}</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ 
-            fontSize: 12, 
-            color: "#64748b", 
-            fontWeight: 600, 
-            background: "#ffffff", 
-            padding: "2px 10px", 
-            borderRadius: 6, 
+          <span style={{
+            fontSize: 12,
+            color: "#64748b",
+            fontWeight: 600,
+            background: "#ffffff",
+            padding: "2px 10px",
+            borderRadius: 6,
             border: "1px solid #e2e8f0",
             boxShadow: "0 1px 2px rgba(0,0,0,0.03)"
           }}>
@@ -341,12 +555,12 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
 
       <div style={{ position: "absolute", bottom: 16, right: 16, display: "flex", flexDirection: "row", alignItems: "flex-end", gap: 12, maxWidth: "70%" }}>
         {order.notes && (
-          <div style={{ 
-            fontSize: 14, 
-            color: "#334155", 
-            background: "#fef9c3", 
-            padding: "12px 16px", 
-            borderRadius: "2px", 
+          <div style={{
+            fontSize: 14,
+            color: "#334155",
+            background: "#fef9c3",
+            padding: "12px 16px",
+            borderRadius: "2px",
             boxShadow: "2px 4px 8px rgba(0,0,0,0.1)",
             borderLeft: "4px solid #facc15",
             fontWeight: 700,
@@ -393,10 +607,10 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
   );
 }
 
-function Modal({ title, onClose, children }) {
+function Modal({ title, onClose, children, wide }) {
   return (
     <div className="modal-backdrop" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="modal-box">
+      <div className="modal-box" style={wide ? { maxWidth: 720 } : {}}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
           <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>{title}</h2>
           <button type="button" onClick={onClose} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "#8A93A0", lineHeight: 1 }}>×</button>
@@ -418,7 +632,7 @@ function DetailModal({ order, onEdit, onDelete, onStatusChange, onClose }) {
         {order.images?.length > 0 && (
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             {order.images.map(img => (
-              <img key={img.id} src={img.src} alt="" style={{ width: 160, height: 160, objectFit: "cover", borderRadius: 12, border: "1px solid #E0E4EA", cursor: "zoom-in" }} 
+              <img key={img.id} src={img.src} alt="" style={{ width: 160, height: 160, objectFit: "cover", borderRadius: 12, border: "1px solid #E0E4EA", cursor: "zoom-in" }}
                 onClick={() => window.open(img.src, "_blank")} />
             ))}
           </div>
@@ -488,9 +702,12 @@ export default function App() {
   const [initialImages, setInitialImages] = useState([]);
   const [hideCompleted, setHideCompleted] = useState(false);
 
+  const [complaints, setComplaints] = useState([]);
+  const [complaintModal, setComplaintModal] = useState(null); // null | "list" | "add"
+
   useEffect(() => {
     const handleGlobalPaste = (e) => {
-      if (modal) return; // 모달이 이미 열려있으면 ImageUploader가 처리함
+      if (modal) return;
       const items = e.clipboardData?.items;
       if (!items) return;
       const files = [];
@@ -511,7 +728,7 @@ export default function App() {
 
   useEffect(() => {
     fetchOrders();
-    // 로컬 데이터 자동 마이그레이션
+    fetchComplaints();
     const autoMigrate = async () => {
       try {
         const saved = localStorage.getItem("figure_orders");
@@ -536,8 +753,13 @@ export default function App() {
   }, []);
 
   const fetchOrders = async () => {
-    const { data, error } = await supabase.from('orders').select('*');
+    const { data } = await supabase.from('orders').select('*');
     if (data) setOrders(data);
+  };
+
+  const fetchComplaints = async () => {
+    const { data } = await supabase.from('complaints').select('*').order('createdAt', { ascending: false });
+    if (data) setComplaints(data);
   };
 
   const addOrder = async (form) => {
@@ -548,6 +770,27 @@ export default function App() {
       setModal(null);
     } else {
       alert("주문 추가 실패: " + error.message);
+    }
+  };
+
+  const addComplaint = async (form) => {
+    const newComplaint = { ...form, id: generateComplaintId(), createdAt: new Date().toISOString() };
+    const { error } = await supabase.from('complaints').insert([newComplaint]);
+    if (!error) {
+      setComplaints(prev => [newComplaint, ...prev]);
+      setComplaintModal("list");
+    } else {
+      alert("불만 접수 저장 실패: " + error.message);
+    }
+  };
+
+  const deleteComplaint = async (id) => {
+    if (!window.confirm("이 불만 접수 내역을 삭제하시겠습니까?")) return;
+    const { error } = await supabase.from('complaints').delete().eq('id', id);
+    if (!error) {
+      setComplaints(prev => prev.filter(c => c.id !== id));
+    } else {
+      alert("삭제 실패: " + error.message);
     }
   };
 
@@ -576,14 +819,10 @@ export default function App() {
 
   const updateStatusQuickly = async (id, newStatus) => {
     try {
-      const { error } = await supabase
-        .from("orders")
-        .update({ status: newStatus })
-        .eq("id", id);
+      const { error } = await supabase.from("orders").update({ status: newStatus }).eq("id", id);
       if (error) throw error;
       fetchOrders();
     } catch (err) {
-      console.error(err);
       alert("상태 변경에 실패했습니다.");
     }
   };
@@ -606,13 +845,10 @@ export default function App() {
       o.description.toLowerCase().includes(q) || (o.contact || "").toLowerCase().includes(q);
     return matchStatus && matchSearch && matchHide;
   }).sort((a, b) => {
-    // 배송완료 상태를 가장 뒤로 보냄
     const statusPriority = (s) => s === "배송완료" ? 1 : 0;
     const priorityA = statusPriority(a.status);
     const priorityB = statusPriority(b.status);
     if (priorityA !== priorityB) return priorityA - priorityB;
-
-    // 같은 그룹 내에서는 주문일 순으로 정렬
     const dateA = a.orderDate || "99/99";
     const dateB = b.orderDate || "99/99";
     return dateA.localeCompare(dateB);
@@ -630,10 +866,39 @@ export default function App() {
           <h1 style={{ margin: 0, fontSize: 28, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.025em" }}>주문 관리 시스템</h1>
           <p style={{ margin: "4px 0 0", fontSize: 14, color: "#64748b" }}>마이미니미 피규어 제작 워크플로우</p>
         </div>
-        <button type="button" onClick={() => setModal("add")} style={{...btnPrimary, display: "flex", alignItems: "center", gap: 8}}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          새 주문 추가
-        </button>
+        <div style={{ display: "flex", gap: 10 }}>
+          <button type="button" onClick={() => setComplaintModal("list")} style={{
+            ...btnSecondary,
+            display: "flex", alignItems: "center", gap: 8,
+            borderColor: "#fecaca", color: "#ef4444",
+            position: "relative"
+          }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            고객 불만 접수
+            {complaints.length > 0 && (
+              <span style={{
+                position: "absolute", top: -6, right: -6,
+                background: "#ef4444", color: "#fff",
+                fontSize: 10, fontWeight: 800,
+                width: 18, height: 18, borderRadius: 9,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                border: "2px solid #fff"
+              }}>{complaints.length}</span>
+            )}
+          </button>
+          <a href="/마이미니미_불만유형현황.xlsx" download style={{
+            ...btnSecondary,
+            display: "flex", alignItems: "center", gap: 8,
+            textDecoration: "none", color: "#10b981", borderColor: "#10b981"
+          }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            불만현황 엑셀 템플릿
+          </a>
+          <button type="button" onClick={() => setModal("add")} style={{...btnPrimary, display: "flex", alignItems: "center", gap: 8}}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            새 주문 추가
+          </button>
+        </div>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 32 }}>
@@ -681,17 +946,14 @@ export default function App() {
             </p>
           </div>
         ) : filtered.map(order => (
-          <OrderCard key={order.id} order={order} 
-            onClick={() => { setSelected(order); setModal("detail"); }} 
+          <OrderCard key={order.id} order={order}
+            onClick={() => { setSelected(order); setModal("detail"); }}
             onQuickStatus={updateStatusQuickly}
             onQuickMemo={async (ord) => {
               const newMemo = window.prompt("메모를 입력하세요:", ord.notes || "");
               if (newMemo !== null) {
                 try {
-                  const { error } = await supabase
-                    .from("orders")
-                    .update({ notes: newMemo })
-                    .eq("id", ord.id);
+                  const { error } = await supabase.from("orders").update({ notes: newMemo }).eq("id", ord.id);
                   if (error) throw error;
                   fetchOrders();
                 } catch (err) {
@@ -712,16 +974,9 @@ export default function App() {
               placeholder="여기에 메모를 입력하세요..."
               rows={5}
               style={{ ...inputStyle, resize: "none", minHeight: 120 }}
-              onKeyDown={e => {
-                if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-                  handleQuickMemoSave();
-                }
-              }}
             />
-            <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>💡 Ctrl + Enter를 누르면 바로 저장됩니다.</p>
             <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 8 }}>
               <button onClick={() => setQuickMemoOrder(null)} style={btnSecondary}>취소</button>
-              <button onClick={handleQuickMemoSave} style={btnPrimary}>메모 저장</button>
             </div>
           </div>
         </Modal>
@@ -745,6 +1000,45 @@ export default function App() {
           onStatusChange={changeStatus}
           onClose={() => { setModal(null); setSelected(null); }}
         />
+      )}
+
+      {complaintModal === "list" && (
+        <Modal title="고객 불만 접수 내역" onClose={() => setComplaintModal(null)} wide>
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <button type="button" onClick={() => setComplaintModal("add")} style={{
+                ...btnPrimary, background: "#ef4444",
+                display: "flex", alignItems: "center", gap: 8, padding: "10px 20px"
+              }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                새 불만 접수
+              </button>
+            </div>
+            {complaints.length === 0 ? (
+              <div style={{ textAlign: "center", padding: "60px 0", color: "#94a3b8" }}>
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: 12, opacity: 0.4 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <p style={{ margin: 0, fontSize: 14, fontWeight: 500 }}>접수된 불만 내역이 없습니다</p>
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, maxHeight: 520, overflowY: "auto" }}>
+                {complaints.map(c => (
+                  <ComplaintCard key={c.id} complaint={c} onDelete={deleteComplaint} />
+                ))}
+              </div>
+            )}
+          </div>
+        </Modal>
+      )}
+
+      {complaintModal === "add" && (
+        <Modal title="고객 불만 접수" onClose={() => setComplaintModal("list")} wide>
+          <div style={{ maxHeight: "70vh", overflowY: "auto", paddingRight: 4 }}>
+            <ComplaintForm
+              onSave={addComplaint}
+              onCancel={() => setComplaintModal("list")}
+            />
+          </div>
+        </Modal>
       )}
     </div>
   );
