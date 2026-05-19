@@ -13,6 +13,7 @@ const PLATFORMS = ["스마트스토어", "송도점", "경북상주점", "서초
 
 const PLATFORM_COLORS = {
   "스마트스토어": "#eafaf1",
+  "가맹점": "#e6f4fa",
   "송도점": "#e6f4fa",
   "경북상주점": "#e6f4fa",
   "서초점": "#e6f4fa",
