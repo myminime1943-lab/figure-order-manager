@@ -866,7 +866,7 @@ export default function App() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 40 }}>
         <div>
           <h1 style={{ margin: 0, fontSize: 30, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.025em" }}>주문 관리 시스템</h1>
-          <p style={{ margin: "2px 0 0", fontSize: 21, color: "#79BCFA", fontWeight: 700, letterSpacing: "1px" }}>마이미니미</p>
+          <p style={{ margin: "2px 0 0", fontSize: 19, color: "#79BCFA", fontWeight: 700, letterSpacing: "1px" }}>마이미니미</p>
         </div>
         <div style={{ display: "flex", gap: 10 }}>
           <button type="button" onClick={() => setComplaintModal("list")} style={{
