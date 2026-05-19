@@ -688,7 +688,7 @@ export default function App() {
   const [filterStatus, setFilterStatus] = useState("전체");
   const [search, setSearch] = useState("");
   const [initialImages, setInitialImages] = useState([]);
-  const [hideCompleted, setHideCompleted] = useState(false);
+  const [hideCompleted, setHideCompleted] = useState(true);
 
   const [complaints, setComplaints] = useState([]);
   const [complaintModal, setComplaintModal] = useState(null); // null | "list" | "add"

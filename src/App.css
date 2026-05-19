@@ -129,7 +129,7 @@ button:active:not(:disabled) {
 
 .sticky-note {
   position: relative;
-  background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   padding: 12px 16px;
   font-size: 14px;
   color: #334155;
