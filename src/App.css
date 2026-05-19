@@ -126,3 +126,29 @@ button:active:not(:disabled) {
   letter-spacing: -0.01em;
   border: 1px solid transparent;
 }
+
+.sticky-note {
+  position: relative;
+  background: linear-gradient(180deg, #fefce8 0%, #fef9c3 100%);
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #334155;
+  font-weight: 700;
+  line-height: 1.5;
+  word-break: break-all;
+  border-bottom-right-radius: 30px 5px;
+  display: inline-block;
+  box-shadow: 1px 2px 4px rgba(0,0,0,0.05);
+}
+
+.sticky-note::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  bottom: 12px;
+  right: 8px;
+  width: 70%;
+  height: 20%;
+  box-shadow: 0 12px 12px rgba(0,0,0,0.15);
+  transform: rotate(4deg);
+}

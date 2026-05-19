@@ -557,21 +557,7 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
 
       <div style={{ position: "absolute", bottom: 16, right: 16, display: "flex", flexDirection: "row", alignItems: "flex-end", gap: 12, maxWidth: "70%" }}>
         {order.notes && (
-          <div style={{
-            fontSize: 14,
-            color: "#334155",
-            background: "#fef9c3",
-            padding: "12px 16px",
-            borderRadius: "2px",
-            boxShadow: "2px 4px 8px rgba(0,0,0,0.1)",
-            borderLeft: "4px solid #facc15",
-            fontWeight: 700,
-            lineHeight: 1.5,
-            wordBreak: "break-all",
-            transform: "rotate(-1.5deg)",
-            position: "relative",
-            display: "inline-block"
-          }}>
+          <div className="sticky-note" style={{ transform: "rotate(-1.5deg)" }}>
             {order.notes}
           </div>
         )}
