@@ -129,7 +129,7 @@ button:active:not(:disabled) {
 
 .sticky-note {
   position: relative;
-  background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
+  background: linear-gradient(135deg, #fef9c3 0%, #fef08a 100%);
   padding: 12px 16px;
   font-size: 14px;
   color: #1e293b;
@@ -153,14 +153,3 @@ button:active:not(:disabled) {
   transform: rotate(4deg);
 }
 
-.sticky-note::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #facc15 0%, #fbbf24 100%);
-  border-radius: 2px 2px 0 0;
-  opacity: 0.6;
-}
