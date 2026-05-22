@@ -680,51 +680,7 @@ function DetailModal({ order, onEdit, onDelete, onStatusChange, onClose }) {
   );
 }
 
-function LoginScreen() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) setError("이메일 또는 비밀번호가 올바르지 않습니다.");
-    setLoading(false);
-  };
-
-  return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f8fafc" }}>
-      <div style={{ background: "#fff", borderRadius: 16, padding: "48px 40px", width: "100%", maxWidth: 400, boxShadow: "0 10px 40px rgba(0,0,0,0.1)" }}>
-        <div style={{ marginBottom: 32, textAlign: "center" }}>
-          <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "#0f172a" }}>주문 관리 시스템</h1>
-          <p style={{ margin: "6px 0 0", fontSize: 14, color: "#79BCFA", fontWeight: 700 }}>마이미니미 안산점</p>
-        </div>
-        <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <div>
-            <label style={{ fontSize: 12, color: "#6B7684", display: "block", marginBottom: 4 }}>이메일</label>
-            <input value={email} onChange={e => setEmail(e.target.value)}
-              type="email" placeholder="이메일 입력" style={inputStyle} required />
-          </div>
-          <div>
-            <label style={{ fontSize: 12, color: "#6B7684", display: "block", marginBottom: 4 }}>비밀번호</label>
-            <input value={password} onChange={e => setPassword(e.target.value)}
-              type="password" placeholder="비밀번호 입력" style={inputStyle} required />
-          </div>
-          {error && <p style={{ margin: 0, fontSize: 13, color: "#ef4444", textAlign: "center" }}>{error}</p>}
-          <button type="submit" disabled={loading} style={{ ...btnPrimary, marginTop: 8, opacity: loading ? 0.6 : 1 }}>
-            {loading ? "로그인 중..." : "로그인"}
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
 export default function App() {
-  const [session, setSession] = useState(undefined);
   const [orders, setOrders] = useState([]);
   const [modal, setModal] = useState(null);
   const [selected, setSelected] = useState(null);
@@ -737,12 +693,6 @@ export default function App() {
 
   const [complaints, setComplaints] = useState([]);
   const [complaintModal, setComplaintModal] = useState(null);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => setSession(session));
-    return () => subscription.unsubscribe();
-  }, []);
 
   useEffect(() => {
     const handleGlobalPaste = (e) => {
@@ -898,9 +848,6 @@ export default function App() {
     return acc;
   }, {});
 
-  if (session === undefined) return null;
-  if (!session) return <LoginScreen />;
-
   return (
     <div className="app-container">
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 40 }}>
@@ -909,10 +856,6 @@ export default function App() {
           <p style={{ margin: "2px 0 0", fontSize: 16, color: "#79BCFA", fontWeight: 700, letterSpacing: "-0.01em" }}>마이미니미 안산점</p>
         </div>
         <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-          <button type="button" onClick={() => supabase.auth.signOut()} style={{
-            padding: "6px 12px", borderRadius: 8, border: "1px solid #e2e8f0",
-            background: "#fff", color: "#94a3b8", fontSize: 12, fontWeight: 500, cursor: "pointer"
-          }}>로그아웃</button>
           <div style={{ display: "flex", gap: 6 }}>
             <button type="button" onClick={() => setComplaintModal("list")} style={{
               padding: "8px 14px", borderRadius: 8, border: "1px solid #fecaca",
