@@ -1038,6 +1038,32 @@ export default function App() {
           </div>
         </Modal>
       )}
+
+      <button
+        type="button"
+        onClick={() => setModal("add")}
+        title="새 주문 추가"
+        style={{
+          position: "fixed", bottom: 32, right: 32,
+          width: 56, height: 56, borderRadius: "50%",
+          background: "#2563eb", color: "#fff", border: "none",
+          boxShadow: "0 4px 16px rgba(37,99,235,0.45)",
+          cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+          zIndex: 900, transition: "all 0.2s cubic-bezier(0.4,0,0.2,1)"
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.transform = "scale(1.1)";
+          e.currentTarget.style.boxShadow = "0 6px 20px rgba(37,99,235,0.55)";
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.transform = "scale(1)";
+          e.currentTarget.style.boxShadow = "0 4px 16px rgba(37,99,235,0.45)";
+        }}
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+      </button>
     </div>
   );
 }
