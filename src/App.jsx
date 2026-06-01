@@ -830,8 +830,10 @@ export default function App() {
     const matchStatus = filterStatus === "전체" || o.status === filterStatus;
     const matchHide = !hideCompleted || o.status !== "배송완료";
     const q = search.toLowerCase();
+    const dateDigits = (o.orderDate || "").replace(/\//g, "");
     const matchSearch = !q || o.customerName.toLowerCase().includes(q) ||
-      o.description.toLowerCase().includes(q) || (o.contact || "").toLowerCase().includes(q);
+      o.description.toLowerCase().includes(q) || (o.contact || "").toLowerCase().includes(q) ||
+      dateDigits.includes(q.replace(/\//g, ""));
     return matchStatus && matchSearch && matchHide;
   }).sort((a, b) => {
     const statusPriority = (s) => s === "배송완료" ? 1 : 0;
