@@ -828,8 +828,8 @@ export default function App() {
 
   const filtered = orders.filter(o => {
     const matchStatus = filterStatus === "전체" || o.status === filterStatus;
-    const matchHide = !hideCompleted || o.status !== "배송완료" || !!q;
     const q = search.toLowerCase();
+    const matchHide = !hideCompleted || o.status !== "배송완료" || !!q;
     const dateDigits = (o.orderDate || "").replace(/\//g, "");
     const matchSearch = !q || o.customerName.toLowerCase().includes(q) ||
       o.description.toLowerCase().includes(q) || (o.contact || "").toLowerCase().includes(q) ||
