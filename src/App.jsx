@@ -565,25 +565,22 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
           </span>
           <span style={{ width: 1, height: 10, background: "#e2e8f0" }}></span>
           <span style={{ fontSize: 13, color: "#94a3b8", fontWeight: 500 }}>{order.orderDate}</span>
+          {order.figureType && !isCompleted && calcProductionDeadline(order.createdAt, order.figureType) && (() => {
+            const t = FIGURE_TYPES[order.figureType];
+            return (
+              <>
+                <span style={{ width: 1, height: 10, background: "#e2e8f0" }}></span>
+                <span style={{
+                  fontSize: 13, fontWeight: 800, color: t.color,
+                  background: t.bg, padding: "3px 10px", borderRadius: 6,
+                  border: `1.5px solid ${t.color}55`, letterSpacing: "-0.01em"
+                }}>
+                  제작완성 {formatDate(calcProductionDeadline(order.createdAt, order.figureType))}
+                </span>
+              </>
+            );
+          })()}
         </div>
-        {order.figureType && !isCompleted && calcProductionDeadline(order.createdAt, order.figureType) && (() => {
-          const t = FIGURE_TYPES[order.figureType];
-          return (
-            <div style={{
-              display: "inline-flex", alignItems: "center", gap: 6,
-              background: t.bg, border: `1.5px solid ${t.color}55`,
-              borderRadius: 8, padding: "6px 14px", alignSelf: "flex-start"
-            }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={t.color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-              </svg>
-              <span style={{ fontSize: 11, color: t.color, fontWeight: 700, letterSpacing: "0.02em" }}>제작완성</span>
-              <span style={{ fontSize: 14, color: t.color, fontWeight: 800, letterSpacing: "-0.01em" }}>
-                {formatDate(calcProductionDeadline(order.createdAt, order.figureType))}
-              </span>
-            </div>
-          );
-        })()}
       </div>
 
       <button
