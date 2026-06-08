@@ -11,6 +11,11 @@ const STATUS = {
 
 const PLATFORMS = ["스마트스토어", "송도점", "경북상주점", "서초점", "쿠팡", "카카오 비즈니스센터", "직접방문", "기타"];
 
+const FIGURE_TYPES = {
+  실사:   { label: "실사",   weeks: 2, color: "#E55B2D", bg: "#FEF0EB" },
+  캐릭터: { label: "캐릭터", weeks: 1, color: "#8B5CF6", bg: "#F3EFFE" },
+};
+
 const PLATFORM_COLORS = {
   "스마트스토어": "#eafaf1",
   "가맹점": "#e6f4fa",
@@ -41,6 +46,13 @@ function formatDate(dateStr) {
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
 }
 
+function calcProductionDeadline(createdAt, figureType) {
+  if (!createdAt || !figureType || !FIGURE_TYPES[figureType]) return null;
+  const d = new Date(createdAt);
+  d.setDate(d.getDate() + FIGURE_TYPES[figureType].weeks * 7);
+  return d;
+}
+
 function todayKorean() {
   const d = new Date();
   return `${d.getFullYear()}년 ${String(d.getMonth() + 1).padStart(2, "0")}월 ${String(d.getDate()).padStart(2, "0")}일`;
@@ -51,6 +63,17 @@ function StatusBadge({ status }) {
   return (
     <span className="status-badge" style={{ color: s.color, background: s.bg, borderColor: `${s.color}20` }}>
       {s.label}
+    </span>
+  );
+}
+
+function FigureTypeBadge({ type }) {
+  if (!type || !FIGURE_TYPES[type]) return null;
+  const t = FIGURE_TYPES[type];
+  return (
+    <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 20,
+      color: t.color, background: t.bg, border: `1px solid ${t.color}44` }}>
+      {type === "실사" ? "📷" : "🎨"} {t.label}
     </span>
   );
 }
@@ -380,6 +403,7 @@ function ComplaintCard({ complaint, onDelete }) {
 function OrderForm({ onSave, onCancel, initialData = null, initialImages = [] }) {
   const [form, setForm] = useState(initialData || {
     customerName: "", platform: "스마트스토어", contact: "", address: "", additionalItems: "",
+    figureType: "실사",
     description: "", orderDate: "",
     status: "접수", notes: "", images: [], createdAt: new Date().toISOString()
   });
@@ -422,6 +446,20 @@ function OrderForm({ onSave, onCancel, initialData = null, initialImages = [] })
             set("orderDate", val);
           }}
             placeholder="12/25" style={inputStyle} maxLength={5} />
+        </div>
+        <div>
+          <label style={{ fontSize: 12, color: "#6B7684", display: "block", marginBottom: 4 }}>피규어 유형</label>
+          <select value={form.figureType || "실사"} onChange={e => set("figureType", e.target.value)}
+            style={{ ...inputStyle, borderColor: FIGURE_TYPES[form.figureType]?.color + "66", color: FIGURE_TYPES[form.figureType]?.color, fontWeight: 600 }}>
+            {Object.entries(FIGURE_TYPES).map(([k, v]) =>
+              <option key={k} value={k}>{k === "실사" ? "📷" : "🎨"} {v.label} (제작 {v.weeks}주)</option>
+            )}
+          </select>
+          {form.createdAt && form.figureType && (
+            <div style={{ marginTop: 5, fontSize: 12, color: FIGURE_TYPES[form.figureType]?.color, fontWeight: 500 }}>
+              제작 완성 예정: {formatDate(calcProductionDeadline(form.createdAt, form.figureType))}
+            </div>
+          )}
         </div>
         <div>
           <label style={{ fontSize: 12, color: "#6B7684", display: "block", marginBottom: 4 }}>상태</label>
@@ -498,8 +536,9 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
         </div>
       )}
       <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 20 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
           <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: "#0f172a" }}>{order.customerName}</h3>
+          {order.figureType && <FigureTypeBadge type={order.figureType} />}
           <span style={{
             fontSize: 12,
             padding: "2px 10px",
@@ -511,7 +550,7 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
             boxShadow: "0 1px 2px rgba(0,0,0,0.03)"
           }}>{order.status}</span>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
           <span style={{
             fontSize: 12,
             color: "#64748b",
@@ -527,6 +566,24 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
           <span style={{ width: 1, height: 10, background: "#e2e8f0" }}></span>
           <span style={{ fontSize: 13, color: "#94a3b8", fontWeight: 500 }}>{order.orderDate}</span>
         </div>
+        {order.figureType && !isCompleted && calcProductionDeadline(order.createdAt, order.figureType) && (() => {
+          const t = FIGURE_TYPES[order.figureType];
+          return (
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              background: t.bg, border: `1.5px solid ${t.color}55`,
+              borderRadius: 8, padding: "6px 14px", alignSelf: "flex-start"
+            }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={t.color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+              <span style={{ fontSize: 11, color: t.color, fontWeight: 700, letterSpacing: "0.02em" }}>제작완성</span>
+              <span style={{ fontSize: 14, color: t.color, fontWeight: 800, letterSpacing: "-0.01em" }}>
+                {formatDate(calcProductionDeadline(order.createdAt, order.figureType))}
+              </span>
+            </div>
+          );
+        })()}
       </div>
 
       <button
@@ -611,13 +668,30 @@ function Modal({ title, onClose, children, wide }) {
 }
 
 function DetailModal({ order, onEdit, onDelete, onStatusChange, onClose }) {
+  const prodDeadline = calcProductionDeadline(order.createdAt, order.figureType);
+  const figType = order.figureType && FIGURE_TYPES[order.figureType];
   return (
     <Modal title="주문 상세" onClose={onClose}>
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
           <span style={{ fontSize: 20, fontWeight: 700 }}>{order.customerName}</span>
+          {order.figureType && <FigureTypeBadge type={order.figureType} />}
           <StatusBadge status={order.status} />
         </div>
+        {figType && prodDeadline && (
+          <div style={{ background: figType.bg, borderRadius: 10, padding: "12px 16px",
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            border: `1px solid ${figType.color}33` }}>
+            <div>
+              <div style={{ fontSize: 12, color: figType.color, fontWeight: 600 }}>
+                {order.figureType === "실사" ? "📷" : "🎨"} {figType.label} 피규어 · 제작 {figType.weeks}주
+              </div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: figType.color, marginTop: 2 }}>
+                제작 완성 예정: {formatDate(prodDeadline)}
+              </div>
+            </div>
+          </div>
+        )}
         {order.images?.length > 0 && (
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             {order.images.map(img => (
@@ -687,6 +761,7 @@ export default function App() {
   const [quickMemoOrder, setQuickMemoOrder] = useState(null);
   const [memoText, setMemoText] = useState("");
   const [filterStatus, setFilterStatus] = useState("전체");
+  const [filterType, setFilterType] = useState("전체");
   const [search, setSearch] = useState("");
   const [initialImages, setInitialImages] = useState([]);
   const [hideCompleted, setHideCompleted] = useState(true);
@@ -828,13 +903,14 @@ export default function App() {
 
   const filtered = orders.filter(o => {
     const matchStatus = filterStatus === "전체" || o.status === filterStatus;
+    const matchType = filterType === "전체" || (o.figureType || "실사") === filterType;
     const q = search.toLowerCase();
     const matchHide = !hideCompleted || o.status !== "배송완료" || !!q;
     const dateDigits = (o.orderDate || "").replace(/\//g, "");
     const matchSearch = !q || o.customerName.toLowerCase().includes(q) ||
       o.description.toLowerCase().includes(q) || (o.contact || "").toLowerCase().includes(q) ||
       dateDigits.includes(q.replace(/\//g, ""));
-    return matchStatus && matchSearch && matchHide;
+    return matchStatus && matchType && matchSearch && matchHide;
   }).sort((a, b) => {
     const statusPriority = (s) => s === "배송완료" ? 1 : 0;
     const priorityA = statusPriority(a.status);
@@ -908,6 +984,28 @@ export default function App() {
             <div style={{ fontSize: 12, color: STATUS[s].color, fontWeight: 600, marginTop: 2 }}>{s}</div>
           </div>
         ))}
+      </div>
+
+      {/* 피규어 유형 필터 */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+        {[["전체", null], ...Object.entries(FIGURE_TYPES)].map(([key, t]) => {
+          const isActive = filterType === key;
+          const color = t ? t.color : "#2563eb";
+          const bg = t ? t.bg : "#eff6ff";
+          const count = key === "전체" ? orders.length : orders.filter(o => (o.figureType || "실사") === key).length;
+          return (
+            <button type="button" key={key} onClick={() => setFilterType(key)} style={{
+              padding: "8px 18px", borderRadius: 8, border: "1px solid",
+              borderColor: isActive ? color : "#e2e8f0",
+              background: isActive ? bg : "#fff",
+              color: isActive ? color : "#64748b",
+              fontWeight: isActive ? 700 : 500, cursor: "pointer", fontSize: 13, transition: "all 0.2s"
+            }}>
+              {key === "전체" ? "전체" : `${key === "실사" ? "📷" : "🎨"} ${key} (제작 ${t.weeks}주)`}
+              <span style={{ opacity: 0.6, marginLeft: 6 }}>{count}</span>
+            </button>
+          );
+        })}
       </div>
 
       <div style={{ display: "flex", gap: 12, marginBottom: 24, flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
