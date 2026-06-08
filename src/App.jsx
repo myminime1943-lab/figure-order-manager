@@ -538,7 +538,6 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
       <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 20 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
           <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: "#0f172a" }}>{order.customerName}</h3>
-          {order.figureType && <FigureTypeBadge type={order.figureType} />}
           <span style={{
             fontSize: 12,
             padding: "2px 10px",
@@ -549,6 +548,20 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
             fontWeight: 600,
             boxShadow: "0 1px 2px rgba(0,0,0,0.03)"
           }}>{order.status}</span>
+          {order.figureType && FIGURE_TYPES[order.figureType] && (() => {
+            const t = FIGURE_TYPES[order.figureType];
+            return (
+              <span style={{
+                fontSize: 12, fontWeight: 800, padding: "2px 10px", borderRadius: 6,
+                color: t.color, background: t.bg, border: `1.5px solid ${t.color}55`,
+                display: "flex", alignItems: "center", gap: 5
+              }}>
+                {order.figureType === "실사" ? "📷" : "🎨"}
+                {order.figureType}
+                <span style={{ fontWeight: 700, opacity: 0.8 }}>· 제작 {t.weeks}주</span>
+              </span>
+            );
+          })()}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
           <span style={{
@@ -571,11 +584,12 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
               <>
                 <span style={{ width: 1, height: 10, background: "#e2e8f0" }}></span>
                 <span style={{
-                  fontSize: 13, fontWeight: 800, color: t.color,
-                  background: t.bg, padding: "3px 10px", borderRadius: 6,
-                  border: `1.5px solid ${t.color}55`, letterSpacing: "-0.01em"
+                  fontSize: 13, fontWeight: 900, color: t.color,
+                  background: t.bg, padding: "4px 12px", borderRadius: 6,
+                  border: `2px solid ${t.color}88`, letterSpacing: "-0.01em",
+                  boxShadow: `0 2px 6px ${t.color}33`
                 }}>
-                  제작완성 {formatDate(calcProductionDeadline(order.createdAt, order.figureType))}
+                  완성 예정 {formatDate(calcProductionDeadline(order.createdAt, order.figureType))}
                 </span>
               </>
             );
@@ -758,7 +772,6 @@ export default function App() {
   const [quickMemoOrder, setQuickMemoOrder] = useState(null);
   const [memoText, setMemoText] = useState("");
   const [filterStatus, setFilterStatus] = useState("전체");
-  const [filterType, setFilterType] = useState("전체");
   const [search, setSearch] = useState("");
   const [initialImages, setInitialImages] = useState([]);
   const [hideCompleted, setHideCompleted] = useState(true);
@@ -900,14 +913,13 @@ export default function App() {
 
   const filtered = orders.filter(o => {
     const matchStatus = filterStatus === "전체" || o.status === filterStatus;
-    const matchType = filterType === "전체" || (o.figureType || "실사") === filterType;
     const q = search.toLowerCase();
     const matchHide = !hideCompleted || o.status !== "배송완료" || !!q;
     const dateDigits = (o.orderDate || "").replace(/\//g, "");
     const matchSearch = !q || o.customerName.toLowerCase().includes(q) ||
       o.description.toLowerCase().includes(q) || (o.contact || "").toLowerCase().includes(q) ||
       dateDigits.includes(q.replace(/\//g, ""));
-    return matchStatus && matchType && matchSearch && matchHide;
+    return matchStatus && matchSearch && matchHide;
   }).sort((a, b) => {
     const statusPriority = (s) => s === "배송완료" ? 1 : 0;
     const priorityA = statusPriority(a.status);
@@ -983,29 +995,7 @@ export default function App() {
         ))}
       </div>
 
-      {/* 피규어 유형 필터 */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-        {[["전체", null], ...Object.entries(FIGURE_TYPES)].map(([key, t]) => {
-          const isActive = filterType === key;
-          const color = t ? t.color : "#2563eb";
-          const bg = t ? t.bg : "#eff6ff";
-          const count = key === "전체" ? orders.length : orders.filter(o => (o.figureType || "실사") === key).length;
-          return (
-            <button type="button" key={key} onClick={() => setFilterType(key)} style={{
-              padding: "8px 18px", borderRadius: 8, border: "1px solid",
-              borderColor: isActive ? color : "#e2e8f0",
-              background: isActive ? bg : "#fff",
-              color: isActive ? color : "#64748b",
-              fontWeight: isActive ? 700 : 500, cursor: "pointer", fontSize: 13, transition: "all 0.2s"
-            }}>
-              {key === "전체" ? "전체" : `${key === "실사" ? "📷" : "🎨"} ${key} (제작 ${t.weeks}주)`}
-              <span style={{ opacity: 0.6, marginLeft: 6 }}>{count}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      <div style={{ display: "flex", gap: 12, marginBottom: 24, flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
+<div style={{ display: "flex", gap: 12, marginBottom: 24, flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           {["전체", ...Object.keys(STATUS)].map(s => (
             <button type="button" key={s} onClick={() => setFilterStatus(s)} style={{
