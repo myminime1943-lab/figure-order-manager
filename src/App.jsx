@@ -554,8 +554,7 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
               <span style={{
                 fontSize: 13, fontWeight: 900, color: t.color,
                 background: t.bg, padding: "4px 12px", borderRadius: 6,
-                border: `2px solid ${t.color}88`, letterSpacing: "-0.01em",
-                boxShadow: `0 2px 6px ${t.color}33`
+                border: `2px solid ${t.color}88`, letterSpacing: "-0.01em"
               }}>
                 완성 예정 {formatDate(calcProductionDeadline(order.createdAt, order.figureType))}
               </span>
