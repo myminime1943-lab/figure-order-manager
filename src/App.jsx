@@ -46,9 +46,13 @@ function formatDate(dateStr) {
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
 }
 
-function calcProductionDeadline(createdAt, figureType) {
-  if (!createdAt || !figureType || !FIGURE_TYPES[figureType]) return null;
-  const d = new Date(createdAt);
+function calcProductionDeadline(orderDate, figureType) {
+  if (!orderDate || !figureType || !FIGURE_TYPES[figureType]) return null;
+  const parts = orderDate.split('/');
+  if (parts.length !== 2) return null;
+  const year = new Date().getFullYear();
+  const d = new Date(year, parseInt(parts[0]) - 1, parseInt(parts[1]));
+  if (isNaN(d.getTime())) return null;
   d.setDate(d.getDate() + FIGURE_TYPES[figureType].weeks * 7);
   return d;
 }
@@ -457,7 +461,7 @@ function OrderForm({ onSave, onCancel, initialData = null, initialImages = [] })
           </select>
           {form.createdAt && form.figureType && (
             <div style={{ marginTop: 5, fontSize: 12, color: FIGURE_TYPES[form.figureType]?.color, fontWeight: 500 }}>
-              제작 완성 예정: {formatDate(calcProductionDeadline(form.createdAt, form.figureType))}
+              제작 완성 예정: {formatDate(calcProductionDeadline(form.orderDate, form.figureType))}
             </div>
           )}
         </div>
@@ -548,7 +552,7 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
             fontWeight: 600,
             boxShadow: "0 1px 2px rgba(0,0,0,0.03)"
           }}>{order.status}</span>
-          {order.figureType && FIGURE_TYPES[order.figureType] && !isCompleted && calcProductionDeadline(order.createdAt, order.figureType) && (() => {
+          {order.figureType && FIGURE_TYPES[order.figureType] && !isCompleted && calcProductionDeadline(order.orderDate, order.figureType) && (() => {
             const t = FIGURE_TYPES[order.figureType];
             return (
               <span style={{
@@ -556,7 +560,7 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
                 background: t.bg, padding: "4px 12px", borderRadius: 6,
                 border: `2px solid ${t.color}88`, letterSpacing: "-0.01em"
               }}>
-                완성 예정 {formatDate(calcProductionDeadline(order.createdAt, order.figureType))}
+                완성 예정 {formatDate(calcProductionDeadline(order.orderDate, order.figureType))}
               </span>
             );
           })()}
@@ -661,7 +665,7 @@ function Modal({ title, onClose, children, wide }) {
 }
 
 function DetailModal({ order, onEdit, onDelete, onStatusChange, onClose }) {
-  const prodDeadline = calcProductionDeadline(order.createdAt, order.figureType);
+  const prodDeadline = calcProductionDeadline(order.orderDate, order.figureType);
   const figType = order.figureType && FIGURE_TYPES[order.figureType];
   return (
     <Modal title="주문 상세" onClose={onClose}>
