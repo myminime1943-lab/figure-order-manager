@@ -548,17 +548,16 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
             fontWeight: 600,
             boxShadow: "0 1px 2px rgba(0,0,0,0.03)"
           }}>{order.status}</span>
-          {order.figureType && FIGURE_TYPES[order.figureType] && (() => {
+          {order.figureType && FIGURE_TYPES[order.figureType] && !isCompleted && calcProductionDeadline(order.createdAt, order.figureType) && (() => {
             const t = FIGURE_TYPES[order.figureType];
             return (
               <span style={{
-                fontSize: 12, fontWeight: 800, padding: "2px 10px", borderRadius: 6,
-                color: t.color, background: t.bg, border: `1.5px solid ${t.color}55`,
-                display: "flex", alignItems: "center", gap: 5
+                fontSize: 13, fontWeight: 900, color: t.color,
+                background: t.bg, padding: "4px 12px", borderRadius: 6,
+                border: `2px solid ${t.color}88`, letterSpacing: "-0.01em",
+                boxShadow: `0 2px 6px ${t.color}33`
               }}>
-                {order.figureType === "실사" ? "📷" : "🎨"}
-                {order.figureType}
-                <span style={{ fontWeight: 700, opacity: 0.8 }}>· 제작 {t.weeks}주</span>
+                완성 예정 {formatDate(calcProductionDeadline(order.createdAt, order.figureType))}
               </span>
             );
           })()}
@@ -578,22 +577,6 @@ function OrderCard({ order, onClick, onQuickStatus, onQuickMemo }) {
           </span>
           <span style={{ width: 1, height: 10, background: "#e2e8f0" }}></span>
           <span style={{ fontSize: 13, color: "#94a3b8", fontWeight: 500 }}>{order.orderDate}</span>
-          {order.figureType && !isCompleted && calcProductionDeadline(order.createdAt, order.figureType) && (() => {
-            const t = FIGURE_TYPES[order.figureType];
-            return (
-              <>
-                <span style={{ width: 1, height: 10, background: "#e2e8f0" }}></span>
-                <span style={{
-                  fontSize: 13, fontWeight: 900, color: t.color,
-                  background: t.bg, padding: "4px 12px", borderRadius: 6,
-                  border: `2px solid ${t.color}88`, letterSpacing: "-0.01em",
-                  boxShadow: `0 2px 6px ${t.color}33`
-                }}>
-                  완성 예정 {formatDate(calcProductionDeadline(order.createdAt, order.figureType))}
-                </span>
-              </>
-            );
-          })()}
         </div>
       </div>
 
